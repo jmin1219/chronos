@@ -8,6 +8,13 @@
       "when": 1740453067305,
       "tag": "0000_third_white_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1740470394012,
+      "tag": "0001_square_silver_centurion",
+      "breakpoints": true
     }
   ]
 }

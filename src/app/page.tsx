@@ -1,8 +1,7 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import TasksPage from "./(features)/tasks/page";
-import HabitsPage from "./(features)/habits/page";
-import DeepWorkPage from "./(features)/deepwork/page";
 
 export default function Home() {
   return (
@@ -16,21 +15,6 @@ export default function Home() {
           <Button>Start Deep Work Session</Button>
         </CardContent>
       </Card>
-
-      {/* TASKS */}
-      <section>
-        <TasksPage />
-      </section>
-
-      {/* HABITS */}
-      <section>
-        <HabitsPage />
-      </section>
-
-      {/* DEEP WORK */}
-      <section>
-        <DeepWorkPage />
-      </section>
     </main>
   );
 }

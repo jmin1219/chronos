@@ -1,3 +1,4 @@
+import { TaskAPIRequest } from "@/app/(features)/tasks/types";
 import { db } from "@/db/index";
 import { tasks } from "@/db/schema";
 import { NextResponse } from "next/server";
@@ -10,16 +11,39 @@ export async function GET() {
 
 // POST: Create a new task
 export async function POST(req: Request) {
-  const { title, projectId, estimatedDuration } = await req.json();
-  const newTask = await db
-    .insert(tasks)
-    .values({
+  try {
+    const {
       title,
       projectId,
       estimatedDuration,
-      actualDuration: 0,
-      completed: 0,
-    })
-    .returning();
-  return NextResponse.json(newTask);
+      dueDate,
+      description,
+    }: TaskAPIRequest = await req.json();
+
+    if (!title || !projectId || !estimatedDuration) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const newTask = await db
+      .insert(tasks)
+      .values({
+        title,
+        projectId,
+        estimatedDuration,
+        actualDuration: 0,
+        dueDate: dueDate ?? null,
+        description: description ?? null,
+        completed: 0,
+      })
+      .returning();
+    return NextResponse.json(newTask);
+  } catch (error) {
+    return NextResponse.json(
+      { error: `Failed to create task: ${error}` },
+      { status: 500 }
+    );
+  }
 }

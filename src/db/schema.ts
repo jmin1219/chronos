@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 // TASKS TABLE
@@ -7,6 +8,8 @@ export const tasks = sqliteTable("tasks", {
   projectId: integer("project_id").references(() => projects.id),
   estimatedDuration: integer("estimated_duration"), // Expected time to complete the task
   actualDuration: integer("actual_duration").default(0), // Auto-calculated via sum of all deep work sessions linked to a task
+  dueDate: integer("due_date").default(sql<number>`NULL`), // Stores UNIX timestamp
+  description: text("description"),
   completed: integer("completed").default(0),
 });
 
