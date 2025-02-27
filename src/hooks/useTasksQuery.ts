@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 // Fetch all tasks
 const fetchTasks = async () => {
   const res = await fetch("/api/tasks");
+  if (!res.ok) throw new Error("Failed to fetch tasks");
   return res.json();
 };
 

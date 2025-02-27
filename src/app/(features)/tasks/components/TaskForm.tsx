@@ -32,12 +32,15 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { taskFormSchema } from "../schema";
+import { useProjectsQuery } from "@/hooks/useProjectsQuery";
 
 export default function TaskForm({
   onSubmitSuccess,
 }: {
   onSubmitSuccess: () => void;
 }) {
+  const { data: projects = [], isLoading, error } = useProjectsQuery();
+
   const [calendarOpen, setCalendarOpen] = useState(false);
   const { mutate, isPending } = useAddTask();
 
@@ -100,8 +103,25 @@ export default function TaskForm({
                     <SelectValue placeholder="Select a Project" />
                   </SelectTrigger>
                   <SelectContent {...field}>
-                    <SelectItem value="1">Project 1</SelectItem>
-                    <SelectItem value="2">Project 2</SelectItem>
+                    {isLoading ? (
+                      <SelectItem disabled value="0">
+                        Loading...
+                      </SelectItem>
+                    ) : error ? (
+                      <SelectItem disabled value="0">
+                        Error loading projects
+                      </SelectItem>
+                    ) : projects.length > 0 ? (
+                      projects.map((project) => (
+                        <SelectItem key={project.id} value={String(project.id)}>
+                          {project.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem disabled value="0">
+                        No projects found
+                      </SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </FormControl>
