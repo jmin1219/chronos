@@ -1,6 +1,6 @@
-import { TaskAPIRequest } from "@/app/(features)/tasks/types";
 import { db } from "@/db/index";
 import { tasks } from "@/db/schema";
+import { TaskAPIRequestType } from "@/lib/types/tasks";
 import { NextResponse } from "next/server";
 
 // GET: Fetch all tasks
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
       estimatedDuration,
       dueDate,
       description,
-    }: TaskAPIRequest = await req.json();
+    }: TaskAPIRequestType = await req.json();
 
     if (!title || !projectId || !estimatedDuration) {
       return NextResponse.json(

@@ -18,7 +18,7 @@ export default function AddTaskDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild autoFocus={open}>
         <Button>Add New Task</Button>
       </DialogTrigger>
       <DialogContent>

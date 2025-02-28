@@ -22,17 +22,20 @@ import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { X as ClearIcon } from "lucide-react";
 import { z } from "zod";
-import { TaskFormValues } from "../types";
 import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { taskFormSchema } from "../schema";
 import { useProjectsQuery } from "@/hooks/useProjectsQuery";
+import { taskFormSchema } from "@/lib/zod-schemas/tasks";
+import { TaskFormValuesType } from "@/lib/types/tasks";
+import { ProjectType } from "@/lib/types/projects";
+import AddProjectDialog from "./AddProjectDialog";
 
 export default function TaskForm({
   onSubmitSuccess,
@@ -44,7 +47,7 @@ export default function TaskForm({
   const [calendarOpen, setCalendarOpen] = useState(false);
   const { mutate, isPending } = useAddTask();
 
-  const form = useForm<TaskFormValues>({
+  const form = useForm<TaskFormValuesType>({
     resolver: zodResolver(taskFormSchema),
     defaultValues: {
       title: "",
@@ -97,7 +100,13 @@ export default function TaskForm({
               <FormLabel>Project</FormLabel>
               <FormControl>
                 <Select
-                  onValueChange={(value) => field.onChange(Number(value))}
+                  onValueChange={(value) => {
+                    field.onChange(Number(value));
+                    if (document.activeElement instanceof HTMLElement) {
+                      document.activeElement.blur();
+                    }
+                  }}
+                  value={String(field.value)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a Project" />
@@ -112,7 +121,7 @@ export default function TaskForm({
                         Error loading projects
                       </SelectItem>
                     ) : projects.length > 0 ? (
-                      projects.map((project) => (
+                      projects.map((project: ProjectType) => (
                         <SelectItem key={project.id} value={String(project.id)}>
                           {project.name}
                         </SelectItem>
@@ -166,6 +175,7 @@ export default function TaskForm({
                       />
                     </PopoverTrigger>
                     <PopoverContent>
+                      {/* TODO: Fix UI of calendar */}
                       <Calendar
                         mode="single"
                         selected={field.value ?? undefined}
@@ -176,13 +186,13 @@ export default function TaskForm({
                       />
                     </PopoverContent>
                   </Popover>
+                  {/* TODO: Fix errrors triggered when clearing due date */}
                   <Button
                     variant="ghost"
                     className="absolute right-1"
                     size="sm"
                     onClick={() => {
-                      field.onChange(null);
-                      form.clearErrors("dueDate");
+                      form.setValue("dueDate", null, { shouldValidate: false });
                     }}
                   >
                     <ClearIcon />

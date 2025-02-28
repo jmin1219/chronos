@@ -1,4 +1,4 @@
-import { TaskAPIRequest } from "@/app/(features)/tasks/types";
+import { TaskAPIRequestType } from "@/lib/types/tasks";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Fetch all tasks
@@ -19,7 +19,7 @@ export const useTasksQuery = () => {
 export const useAddTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (newTask: TaskAPIRequest) => {
+    mutationFn: async (newTask: TaskAPIRequestType) => {
       const res = await fetch("/api/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

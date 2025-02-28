@@ -1,4 +1,4 @@
-export type Task = {
+export type TaskType = {
   id: number;
   title: string;
   projectId: number;
@@ -9,7 +9,7 @@ export type Task = {
   completed: boolean;
 };
 
-export type TaskFormValues = {
+export type TaskFormValuesType = {
   title: string;
   projectId: number;
   estimatedDuration: number;
@@ -17,7 +17,7 @@ export type TaskFormValues = {
   description?: string;
 };
 
-export type TaskAPIRequest = {
+export type TaskAPIRequestType = {
   title: string;
   projectId: number;
   estimatedDuration: number;
