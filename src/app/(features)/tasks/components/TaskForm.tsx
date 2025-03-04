@@ -26,7 +26,6 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -35,6 +34,7 @@ import { useProjectsQuery } from "@/hooks/useProjectsQuery";
 import { taskFormSchema } from "@/lib/zod-schemas/tasks";
 import { TaskFormValuesType } from "@/lib/types/tasks";
 import { ProjectType } from "@/lib/types/projects";
+import { Separator } from "@/components/ui/separator";
 import AddProjectDialog from "./AddProjectDialog";
 
 export default function TaskForm({
@@ -47,6 +47,8 @@ export default function TaskForm({
   const [calendarOpen, setCalendarOpen] = useState(false);
   const { mutate, isPending } = useAddTask();
 
+  const [showAddProjectModal, setShowAddProjectModal] = useState(false);
+
   const form = useForm<TaskFormValuesType>({
     resolver: zodResolver(taskFormSchema),
     defaultValues: {
@@ -55,6 +57,7 @@ export default function TaskForm({
       estimatedDuration: 60,
       dueDate: null,
       description: "",
+      priority: "should-do",
     },
   });
 
@@ -101,6 +104,10 @@ export default function TaskForm({
               <FormControl>
                 <Select
                   onValueChange={(value) => {
+                    if (value === "add-new-project") {
+                      setShowAddProjectModal(true);
+                      return;
+                    }
                     field.onChange(Number(value));
                     if (document.activeElement instanceof HTMLElement) {
                       document.activeElement.blur();
@@ -131,6 +138,34 @@ export default function TaskForm({
                         No projects found
                       </SelectItem>
                     )}
+                    <Separator className="my-1" />
+                    <SelectItem key="add-new-project" value="add-new-project">
+                      Add New Project
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Priority: Must Do, Should Do, Could Do */}
+        <FormField
+          control={form.control}
+          name="priority"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Priority</FormLabel>
+              <FormControl>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a priority" />
+                  </SelectTrigger>
+                  <SelectContent {...field}>
+                    <SelectItem value="must-do">🔴 Must Do</SelectItem>
+                    <SelectItem value="should-do">🟡 Should Do</SelectItem>
+                    <SelectItem value="could-do">🔵 Could Do</SelectItem>
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -174,8 +209,7 @@ export default function TaskForm({
                         onClick={() => setCalendarOpen(true)}
                       />
                     </PopoverTrigger>
-                    <PopoverContent>
-                      {/* TODO: Fix UI of calendar */}
+                    <PopoverContent className="w-auto">
                       <Calendar
                         mode="single"
                         selected={field.value ?? undefined}
@@ -222,6 +256,14 @@ export default function TaskForm({
           {isPending ? "Saving..." : "Create Task"}
         </Button>
       </form>
+
+      {showAddProjectModal && (
+        <AddProjectDialog
+          open={showAddProjectModal}
+          onClose={() => setShowAddProjectModal(false)}
+          onProjectAdded={}
+        />
+      )}
     </FormProvider>
   );
 }

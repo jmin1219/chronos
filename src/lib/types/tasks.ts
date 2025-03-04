@@ -7,6 +7,7 @@ export type TaskType = {
   dueDate?: number | null;
   description?: string;
   completed: boolean;
+  priority: string;
 };
 
 export type TaskFormValuesType = {
@@ -15,6 +16,7 @@ export type TaskFormValuesType = {
   estimatedDuration: number;
   dueDate?: Date | null;
   description?: string;
+  priority: string;
 };
 
 export type TaskAPIRequestType = {
@@ -23,4 +25,5 @@ export type TaskAPIRequestType = {
   estimatedDuration: number;
   dueDate?: number | null;
   description?: string;
+  priority: string;
 };

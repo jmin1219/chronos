@@ -16,4 +16,5 @@ export const taskFormSchema = z.object({
     .string()
     .max(500, "Description cannot exceed 500 characters.")
     .optional(),
+  priority: z.string({ required_error: "Please select a priority" }),
 });

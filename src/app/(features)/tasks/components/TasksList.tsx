@@ -8,6 +8,7 @@ import {
 } from "@/hooks/useTasksQuery";
 import AddTaskDialog from "./AddTaskDialog";
 import { Button } from "@/components/ui/button";
+import { TaskType } from "@/lib/types/tasks";
 
 export default function TasksList() {
   const { data: tasks = [], isLoading, error } = useTasksQuery();
@@ -28,7 +29,7 @@ export default function TasksList() {
             <p>Error loading tasks</p>
           ) : (
             <ul>
-              {tasks.map((task) => (
+              {tasks.map((task: TaskType) => (
                 <li key={task.id}>
                   <span>{task.title}</span>
                   <div>

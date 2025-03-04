@@ -11,6 +11,12 @@ export const tasks = sqliteTable("tasks", {
   dueDate: integer("due_date").default(sql<number>`NULL`), // Stores UNIX timestamp
   description: text("description"),
   completed: integer("completed").default(0),
+  priority: text("status").default("could do"),
+  status: text("status").default("pending"),
+  createdAt: integer("created_at").default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: integer("updated_at")
+    .default(sql`CURRENT_TIMESTAMP`)
+    .$onUpdate(() => sql`CURRENT_TIMESTAMP`),
 });
 
 export const taskSchedules = sqliteTable("task_schedules", {
@@ -26,6 +32,7 @@ export const taskSchedules = sqliteTable("task_schedules", {
 export const projects = sqliteTable("projects", {
   id: integer("id").primaryKey(),
   name: text("name").notNull(),
+  color: text("color").notNull(), // HEX code, eg. "#FFFFFF"
   description: text("description"),
 });
 

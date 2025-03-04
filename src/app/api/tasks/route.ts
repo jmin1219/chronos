@@ -18,6 +18,7 @@ export async function POST(req: Request) {
       estimatedDuration,
       dueDate,
       description,
+      priority,
     }: TaskAPIRequestType = await req.json();
 
     if (!title || !projectId || !estimatedDuration) {
@@ -37,6 +38,7 @@ export async function POST(req: Request) {
         dueDate: dueDate ?? null,
         description: description ?? null,
         completed: 0,
+        priority: priority,
       })
       .returning();
     return NextResponse.json(newTask);
