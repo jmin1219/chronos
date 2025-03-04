@@ -10,7 +10,8 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
-    const { name, description }: ProjectAPIRequestType = await req.json();
+    const { name, color, description }: ProjectAPIRequestType =
+      await req.json();
 
     if (!name) {
       return NextResponse.json(
@@ -23,6 +24,7 @@ export async function POST(req: Request) {
       .insert(projects)
       .values({
         name,
+        color,
         description,
       })
       .returning();

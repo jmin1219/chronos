@@ -1,26 +1,35 @@
-import { Button } from "@/components/ui/button";
 import ProjectForm from "./ProjectForm";
 
-import { useState } from "react";
+import { ProjectType } from "@/lib/types/projects";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
-export default function AddProjectDialog() {
-  const [open, setOpen] = useState(false);
-
+export default function AddProjectDialog({
+  open,
+  onClose,
+  onProjectAdded,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onProjectAdded: (newProject: ProjectType) => void;
+}) {
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild autoFocus={open}>
-        <Button variant="outline" className="w-full">
-          Add New Project
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent>
-        <ProjectForm onSubmitSuccess={() => setOpen(false)} />
-      </PopoverContent>
-    </Popover>
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Create New Project</DialogTitle>
+        </DialogHeader>
+        <ProjectForm
+          onSubmitSuccess={(newProject) => {
+            onProjectAdded(newProject);
+            onClose();
+          }}
+        />
+      </DialogContent>
+    </Dialog>
   );
 }

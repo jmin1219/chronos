@@ -61,6 +61,11 @@ export default function TaskForm({
     },
   });
 
+  const handleProjectAdded = async (newProject: ProjectType) => {
+    setShowAddProjectModal(false);
+    form.setValue("projectId", newProject.id);
+  };
+
   const handleSubmit = (values: z.infer<typeof taskFormSchema>) => {
     mutate({
       ...values,
@@ -261,7 +266,7 @@ export default function TaskForm({
         <AddProjectDialog
           open={showAddProjectModal}
           onClose={() => setShowAddProjectModal(false)}
-          onProjectAdded={}
+          onProjectAdded={handleProjectAdded}
         />
       )}
     </FormProvider>
