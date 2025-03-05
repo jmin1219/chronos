@@ -29,6 +29,8 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
@@ -39,10 +41,13 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
+import { useState } from "react";
 
 export default function TasksTable() {
   const toggleTaskCompleteMutation = useToggleTaskComplete();
   const deleteTaskMutation = useDeleteTask();
+
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const {
     data: tasks = [],
@@ -71,6 +76,8 @@ export default function TasksTable() {
     {
       accessorKey: "completed",
       header: "Done",
+      enableSorting: true,
+      sortingFn: "basic",
       cell: ({ row }) => {
         const task = row.original;
 
@@ -97,6 +104,7 @@ export default function TasksTable() {
     {
       accessorKey: "title",
       header: "Task",
+      enableSorting: false,
       cell: ({ row }) => {
         const MAX_LENGTH = 30;
         const description = row.original.description || "";
@@ -117,6 +125,14 @@ export default function TasksTable() {
     {
       accessorKey: "priority",
       header: "Priority",
+      enableSorting: true,
+      sortingFn: (rowA, rowB) => {
+        const priorityOrder = ["must-do", "should-do", "could-do"];
+        return (
+          priorityOrder.indexOf(rowA.original.priority) -
+          priorityOrder.indexOf(rowB.original.priority)
+        );
+      },
       cell: ({ row }) => {
         const priorityIcons: Record<string, { icon: string; color: string }> = {
           "must-do": { icon: "🔴", color: "#FF3131" },
@@ -144,6 +160,8 @@ export default function TasksTable() {
     {
       accessorKey: "project",
       header: "Project",
+      enableSorting: true,
+      sortingFn: "basic",
       cell: ({ row }) => {
         const project = projectMap[row.original.projectId];
         return (
@@ -156,16 +174,22 @@ export default function TasksTable() {
     {
       accessorKey: "estimatedDuration",
       header: "Estimated Duration",
+      enableSorting: true,
+      sortingFn: "basic",
       cell: ({ row }) => <span>{row.original.estimatedDuration} min</span>,
     },
     {
       accessorKey: "actualDuration",
       header: "Time Spent",
+      enableSorting: true,
+      sortingFn: "basic",
       cell: ({ row }) => <span>{row.original.actualDuration} min</span>,
     },
     {
       accessorKey: "dueDate",
       header: "Due",
+      enableSorting: true,
+      sortingFn: "basic",
       cell: ({ row }) => {
         return row.original.dueDate
           ? format(new Date(row.original.dueDate * 1000), "MMM dd, yyyy")
@@ -209,6 +233,9 @@ export default function TasksTable() {
     data: tasks ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: { sorting },
+    onSortingChange: setSorting,
   });
 
   if (tasksLoading || projectsLoading) {
@@ -226,9 +253,30 @@ export default function TasksTable() {
           <TableRow key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
               <TableHead key={header.id}>
-                {flexRender(
-                  header.column.columnDef.header,
-                  header.getContext()
+                {header.column.getCanSort() ? (
+                  <button
+                    onClick={header.column.getToggleSortingHandler()}
+                    className="flex items-center gap-1"
+                  >
+                    <p>
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                    </p>
+                    <p>
+                      {header.column.getIsSorted() === "asc"
+                        ? "🔼"
+                        : header.column.getIsSorted() === "desc"
+                        ? "🔽"
+                        : ""}
+                    </p>
+                  </button>
+                ) : (
+                  flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )
                 )}
               </TableHead>
             ))}
