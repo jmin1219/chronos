@@ -42,12 +42,12 @@ export const useToggleTaskComplete = () => {
       completed,
     }: {
       taskId: number;
-      completed: boolean;
+      completed: number;
     }) => {
       await fetch(`/api/tasks/${taskId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ completed: completed ? 0 : 1 }),
+        body: JSON.stringify({ completed }),
       });
     },
     onSuccess: () => {

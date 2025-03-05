@@ -21,11 +21,15 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   const { title, estimatedDuration, completed } = await req.json();
-  await db
+  const updatedTask = await db
     .update(tasks)
-    .set({ title, estimatedDuration, completed })
-    .where(eq(tasks.id, Number(params.id)));
-  return NextResponse.json({ message: "Task updated successfully!" });
+    .set({ title, estimatedDuration, completed: completed ? 1 : 0 })
+    .where(eq(tasks.id, Number(params.id)))
+    .returning();
+  return NextResponse.json({
+    task: updatedTask[0],
+    message: "Task updated successfully!",
+  });
 }
 
 // DELETE: Delete a task

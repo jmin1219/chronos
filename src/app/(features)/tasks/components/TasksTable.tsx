@@ -2,7 +2,13 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -17,6 +23,7 @@ import {
   useTasksQuery,
   useToggleTaskComplete,
 } from "@/hooks/useTasksQuery";
+import { ProjectType } from "@/lib/types/projects";
 import { TaskType } from "@/lib/types/tasks";
 import {
   ColumnDef,
@@ -25,7 +32,13 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { format } from "date-fns";
-import { MoreVerticalIcon } from "lucide-react";
+import {
+  Circle,
+  CircleCheckBig,
+  MoreVertical,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 
 export default function TasksTable() {
   const toggleTaskCompleteMutation = useToggleTaskComplete();
@@ -43,56 +56,88 @@ export default function TasksTable() {
     error: projectsError,
   } = useProjectsQuery();
 
-  const projectMap = projects.reduce((acc, project) => {
-    acc[project.id] = project;
-    return acc;
-  }, {} as Record<number, { name: string; color: string }>);
+  const projectMap = projects.reduce(
+    (
+      acc: Record<number, { name: string; color: string }>,
+      project: ProjectType
+    ) => {
+      acc[project.id] = project;
+      return acc;
+    },
+    {} as Record<number, { name: string; color: string }>
+  );
 
   const columns: ColumnDef<TaskType>[] = [
     {
       accessorKey: "completed",
-      header: "Done?",
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.original.completed}
-          onCheckedChange={(checked) =>
-            toggleTaskCompleteMutation.mutate({
-              taskId: row.original.id,
-              completed: !!checked,
-            })
-          }
-        />
-      ),
+      header: "Done",
+      cell: ({ row }) => {
+        const task = row.original;
+
+        return (
+          <Button
+            variant="ghost"
+            onClick={() =>
+              toggleTaskCompleteMutation.mutate({
+                taskId: task.id,
+                completed: task.completed ? 0 : 1,
+              })
+            }
+            className="transition-all duration-200 ease-in-out"
+          >
+            {task.completed ? (
+              <CircleCheckBig className="h-8 w-8 text-green-500 scale-150 transition-transform duration-200 bg-green-100 rounded-full" />
+            ) : (
+              <Circle className="h-8 w-8 text-gray-400 hover:text-gray-600 scale-150 transition-transform duration-200" />
+            )}
+          </Button>
+        );
+      },
     },
     {
       accessorKey: "title",
       header: "Task",
-      cell: ({ row }) => (
-        <div>
-          <p className="font-semibold">{row.original.title}</p>
-          {row.original.description && (
-            <p className="text-xs text-gray-500">{row.original.description}</p>
-          )}
-        </div>
-      ),
+      cell: ({ row }) => {
+        const MAX_LENGTH = 30;
+        const description = row.original.description || "";
+        const truncatedDescription =
+          description.length > MAX_LENGTH
+            ? description.substring(0, MAX_LENGTH) + "..."
+            : description;
+        return (
+          <div>
+            <p className="font-semibold">{row.original.title}</p>
+            {description && (
+              <p className="text-xs text-gray-500">{truncatedDescription}</p>
+            )}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "priority",
       header: "Priority",
       cell: ({ row }) => {
-        const priorityIcons = {
-          "must-do": "🔴",
-          "should-do": "🟡",
-          "could-do": "🔵",
+        const priorityIcons: Record<string, { icon: string; color: string }> = {
+          "must-do": { icon: "🔴", color: "#FF3131" },
+          "should-do": { icon: "🟡", color: "#FFFA31" },
+          "could-do": { icon: "🔵", color: "#3181FF" },
         };
         return (
-          <div className="flex items-center gap-2">
-            {/* TODO: Make sure correct icon shows up based on priority level. */}
-            <span>{priorityIcons[row.original.priority]}</span>
-            <span className="capitalize">
-              {row.original.priority.replace("-", " ")}
-            </span>
-          </div>
+          <Badge
+            variant="outline"
+            style={{
+              borderColor: priorityIcons[row.original.priority].color,
+              borderWidth: "2px",
+            }}
+          >
+            <div className="flex items-center gap-2">
+              <span>{priorityIcons[row.original.priority].icon}</span>
+              <span className="capitalize">
+                {row.original.priority.replace("-", " ")}
+              </span>
+            </div>
+          </Badge>
         );
       },
     },
@@ -124,13 +169,39 @@ export default function TasksTable() {
       cell: ({ row }) => {
         return row.original.dueDate
           ? format(new Date(row.original.dueDate * 1000), "MMM dd, yyyy")
-          : "---";
+          : "--";
       },
     },
     {
       accessorKey: "actions",
       header: "",
-      cell: () => <MoreVerticalIcon />,
+      cell: ({ row }) => {
+        const task = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8">
+                <MoreVertical />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>
+                <Pencil />
+                Edit Task
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => deleteTaskMutation.mutate(task.id)}
+                className="text-red-600"
+              >
+                <Trash2 />
+                Delete Task
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
     },
   ];
 
