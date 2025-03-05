@@ -11,8 +11,7 @@ export const tasks = sqliteTable("tasks", {
   dueDate: integer("due_date").default(sql<number>`NULL`), // Stores UNIX timestamp
   description: text("description"),
   completed: integer("completed").default(0),
-  priority: text("status").default("could do"),
-  status: text("status").default("pending"),
+  priority: text("priority").default("could do"),
   createdAt: integer("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: integer("updated_at")
     .default(sql`CURRENT_TIMESTAMP`)

@@ -145,7 +145,7 @@ export default function TaskForm({
                     )}
                     <Separator className="my-1" />
                     <SelectItem key="add-new-project" value="add-new-project">
-                      Add New Project
+                      + Add New Project
                     </SelectItem>
                   </SelectContent>
                 </Select>

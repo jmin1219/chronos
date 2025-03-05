@@ -5,8 +5,16 @@ import { NextResponse } from "next/server";
 
 // GET: Fetch all tasks
 export async function GET() {
-  const allTasks = await db.select().from(tasks);
-  return NextResponse.json(allTasks);
+  try {
+    const allTasks = await db.select().from(tasks);
+    return NextResponse.json(allTasks);
+  } catch (error) {
+    console.error("API Error: ", error);
+    return NextResponse.json(
+      { error: "Failed to fetch tasks" },
+      { status: 500 }
+    );
+  }
 }
 
 // POST: Create a new task

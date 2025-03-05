@@ -12,6 +12,7 @@ import {
 
 import TaskForm from "./TaskForm";
 import { useState } from "react";
+import { CirclePlus } from "lucide-react";
 
 export default function AddTaskDialog() {
   const [open, setOpen] = useState(false);
@@ -19,7 +20,10 @@ export default function AddTaskDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild autoFocus={open}>
-        <Button>Add New Task</Button>
+        <Button>
+          <CirclePlus />
+          Add New Task
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
