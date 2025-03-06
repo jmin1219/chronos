@@ -36,7 +36,7 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { endOfMonth, format } from "date-fns";
+import { format } from "date-fns";
 import {
   Circle,
   CircleCheckBig,
@@ -209,8 +209,10 @@ export default function TasksTable() {
       },
       filterFn: (row, columnId, filterValue) => {
         if (!filterValue || filterValue === "all") return true;
-        if (!row.getValue(columnId)) return false;
-        const dueDate = new Date(row.getValue(columnId) * 1000);
+        const dueDateValue = row.getValue(columnId) as number;
+        if (!dueDateValue) return false;
+
+        const dueDate = new Date(dueDateValue * 1000);
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const startOfWeek = new Date(today);
