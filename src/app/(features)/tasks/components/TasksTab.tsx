@@ -2,8 +2,8 @@
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import AddTaskDialog from "./AddTaskDialog";
-import TasksFilters from "./TasksFilters";
 import TasksTable from "./TasksTable";
+import { Separator } from "@/components/ui/separator";
 
 export default function TasksTab() {
   return (
@@ -19,8 +19,8 @@ export default function TasksTab() {
 
           <AddTaskDialog />
         </CardHeader>
+        <Separator />
         <CardContent className="p-5">
-          <TasksFilters />
           <TasksTable />
         </CardContent>
       </Card>
