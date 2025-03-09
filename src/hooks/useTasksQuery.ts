@@ -1,4 +1,4 @@
-import { TaskAPIRequestType } from "@/lib/types/tasks";
+import { TaskAPIRequestType, TaskType } from "@/lib/types/tasks";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Fetch all tasks
@@ -33,21 +33,15 @@ export const useAddTask = () => {
   });
 };
 
-// Toggle Task Completion
-export const useToggleTaskComplete = () => {
+// Update Task or Toggle Task Completion
+export const useUpdateTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      taskId,
-      completed,
-    }: {
-      taskId: number;
-      completed: number;
-    }) => {
-      await fetch(`/api/tasks/${taskId}`, {
+    mutationFn: async (updatedTask: TaskType) => {
+      await fetch(`/api/tasks/${updatedTask.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ completed }),
+        body: JSON.stringify(updatedTask),
       });
     },
     onSuccess: () => {

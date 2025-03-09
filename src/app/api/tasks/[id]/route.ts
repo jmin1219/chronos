@@ -20,10 +20,26 @@ export async function PUT(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const { title, estimatedDuration, completed } = await req.json();
+  const {
+    title,
+    estimatedDuration,
+    completed,
+    projectId,
+    description,
+    dueDate,
+    priority,
+  } = await req.json();
   const updatedTask = await db
     .update(tasks)
-    .set({ title, estimatedDuration, completed: completed ? 1 : 0 })
+    .set({
+      title,
+      estimatedDuration,
+      projectId,
+      description,
+      dueDate,
+      priority,
+      completed: completed ? 1 : 0,
+    })
     .where(eq(tasks.id, Number(params.id)))
     .returning();
   return NextResponse.json({

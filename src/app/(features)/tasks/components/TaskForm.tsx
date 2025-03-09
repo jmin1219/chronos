@@ -15,13 +15,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useAddTask } from "@/hooks/useTasksQuery";
+import { useAddTask, useUpdateTask } from "@/hooks/useTasksQuery";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { X as ClearIcon } from "lucide-react";
-import { z } from "zod";
 import {
   Select,
   SelectContent,
@@ -32,33 +31,45 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useProjectsQuery } from "@/hooks/useProjectsQuery";
 import { taskFormSchema } from "@/lib/zod-schemas/tasks";
-import { TaskFormValuesType } from "@/lib/types/tasks";
+import { TaskFormValuesType, TaskType } from "@/lib/types/tasks";
 import { ProjectType } from "@/lib/types/projects";
 import { Separator } from "@/components/ui/separator";
 import AddProjectDialog from "./AddProjectDialog";
 
 export default function TaskForm({
   onSubmitSuccess,
+  initialData,
 }: {
   onSubmitSuccess: () => void;
+  initialData?: TaskType;
 }) {
   const { data: projects = [], isLoading, error } = useProjectsQuery();
 
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const { mutate, isPending } = useAddTask();
+
+  const { mutate: mutateAddTask, isPending: isPendingAddTask } = useAddTask();
+  const { mutate: mutateUpdateTask, isPending: isPendingUpdateTask } =
+    useUpdateTask();
 
   const [showAddProjectModal, setShowAddProjectModal] = useState(false);
 
   const form = useForm<TaskFormValuesType>({
     resolver: zodResolver(taskFormSchema),
-    defaultValues: {
-      title: "",
-      projectId: 0,
-      estimatedDuration: 60,
-      dueDate: null,
-      description: "",
-      priority: "should-do",
-    },
+    defaultValues: initialData
+      ? {
+          ...initialData,
+          dueDate: initialData.dueDate
+            ? new Date(initialData.dueDate * 1000)
+            : null,
+        }
+      : {
+          title: "",
+          projectId: 0,
+          estimatedDuration: 60,
+          dueDate: null,
+          description: "",
+          priority: "should-do",
+        },
   });
 
   const handleProjectAdded = async (newProject: ProjectType) => {
@@ -66,14 +77,21 @@ export default function TaskForm({
     form.setValue("projectId", newProject.id);
   };
 
-  const handleSubmit = (values: z.infer<typeof taskFormSchema>) => {
-    mutate({
+  const handleSubmit = (values: TaskFormValuesType) => {
+    const taskPayload = {
       ...values,
       dueDate:
         values.dueDate instanceof Date
           ? Math.floor(values.dueDate.getTime() / 1000)
           : null,
-    });
+    };
+
+    if (initialData) {
+      mutateUpdateTask({ ...initialData, ...taskPayload });
+    } else {
+      mutateAddTask(taskPayload);
+    }
+
     form.reset();
     onSubmitSuccess();
   };
@@ -257,8 +275,12 @@ export default function TaskForm({
         />
 
         {/* Submit Button */}
-        <Button type="submit" disabled={isPending} className="w-full">
-          {isPending ? "Saving..." : "Create Task"}
+        <Button
+          type="submit"
+          disabled={isPendingAddTask || isPendingUpdateTask}
+          className="w-full"
+        >
+          {isPendingAddTask || isPendingUpdateTask ? "Saving..." : "Save Task"}
         </Button>
       </form>
 

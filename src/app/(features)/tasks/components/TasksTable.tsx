@@ -21,7 +21,7 @@ import { useProjectsQuery } from "@/hooks/useProjectsQuery";
 import {
   useDeleteTask,
   useTasksQuery,
-  useToggleTaskComplete,
+  useUpdateTask,
 } from "@/hooks/useTasksQuery";
 import { ProjectType } from "@/lib/types/projects";
 import { TaskType } from "@/lib/types/tasks";
@@ -45,13 +45,16 @@ import {
   Trash2,
 } from "lucide-react";
 import { useState } from "react";
+import EditTaskDialog from "./EditTaskDialog";
 
 export default function TasksTable() {
-  const toggleTaskCompleteMutation = useToggleTaskComplete();
+  const updateTaskMutation = useUpdateTask();
   const deleteTaskMutation = useDeleteTask();
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  const [selectedTask, setSelectedTask] = useState<TaskType | null>(null);
 
   const {
     data: tasks = [],
@@ -90,9 +93,9 @@ export default function TasksTable() {
           <Button
             variant="ghost"
             onClick={() =>
-              toggleTaskCompleteMutation.mutate({
-                taskId: task.id,
-                completed: task.completed ? 0 : 1,
+              updateTaskMutation.mutate({
+                ...task,
+                completed: !task.completed,
               })
             }
             className="transition-all duration-200 ease-in-out"
@@ -245,27 +248,38 @@ export default function TasksTable() {
         const task = row.original;
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8">
-                <MoreVertical />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>
-                <Pencil />
-                Edit Task
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => deleteTaskMutation.mutate(task.id)}
-                className="text-red-600"
-              >
-                <Trash2 />
-                Delete Task
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8">
+                  <MoreVertical />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => setTimeout(() => setSelectedTask(task))}
+                >
+                  <Pencil />
+                  Edit Task
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => deleteTaskMutation.mutate(task.id)}
+                  className="text-red-600"
+                >
+                  <Trash2 />
+                  Delete Task
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {/* Edit Task Dialog */}
+            {selectedTask && (
+              <EditTaskDialog
+                task={selectedTask}
+                onClose={() => setSelectedTask(null)}
+              />
+            )}
+          </>
         );
       },
     },
