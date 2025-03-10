@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "./components/QueryProvider";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import AppSidebar from "./components/AppSidebar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +31,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {/* Cannot directly implement QueryClientProvider here because this file (layou.tsx) is a server component. */}
-        <QueryProvider>{children}</QueryProvider> 
+        <QueryProvider>
+          <SidebarProvider>
+            <AppSidebar />
+            <main className="w-full">{children}</main>
+          </SidebarProvider>
+        </QueryProvider>
       </body>
     </html>
   );

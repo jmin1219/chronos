@@ -1,9 +1,9 @@
 "use client";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import AddTaskDialog from "./AddTaskDialog";
 import TasksTable from "./TasksTable";
 import { Separator } from "@/components/ui/separator";
+import AddTaskDialog from "./AddTaskDialog";
 
 export default function TasksTab() {
   return (

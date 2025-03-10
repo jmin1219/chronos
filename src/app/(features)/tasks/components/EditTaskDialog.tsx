@@ -18,6 +18,7 @@ export default function EditTaskDialog({ task, onClose }: EditTaskDialogProps) {
   const [open, setOpen] = useState(!!task);
 
   return (
+    // TODO: Fix "Blocked aria-hidden..." error
     <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
       <DialogContent>
         <DialogHeader>

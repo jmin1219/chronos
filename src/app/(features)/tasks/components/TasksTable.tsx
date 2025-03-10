@@ -256,9 +256,7 @@ export default function TasksTable() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => setTimeout(() => setSelectedTask(task))}
-                >
+                <DropdownMenuItem onClick={() => setSelectedTask(task)}>
                   <Pencil />
                   Edit Task
                 </DropdownMenuItem>
