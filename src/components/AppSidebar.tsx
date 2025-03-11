@@ -19,7 +19,7 @@ import {
   LayoutDashboardIcon,
   ListChecksIcon,
 } from "lucide-react";
-import AddTaskDialog from "../(features)/tasks/components/AddTaskDialog";
+import AddTaskDialog from "../app/(features)/tasks/components/AddTaskDialog";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -39,7 +39,7 @@ export default function AppSidebar() {
       <SidebarContent>
         {/* NAVIGATION LINKS */}
         <SidebarGroup>
-          <SidebarGroupLabel>NavLinks</SidebarGroupLabel>
+          <SidebarGroupLabel>Links</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-2">
               {navLinks.map((link) => {

@@ -301,7 +301,7 @@ export default function TasksTable() {
   if (tasksError || projectsError) {
     return <p>Error Loading data. Please try again.</p>;
   }
-
+  // TODO: Make Column widths fixed
   return (
     <div>
       {/* Filter Select Inputs */}

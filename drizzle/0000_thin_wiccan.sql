@@ -1,9 +1,12 @@
 CREATE TABLE `deepwork_sessions` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`task_id` integer,
-	`start_time` integer,
-	`end_time` integer,
-	`duration` integer,
+	`start_time` integer NOT NULL,
+	`end_time` integer DEFAULT NULL,
+	`session_duration` integer,
+	`work_duration` integer,
+	`pause_duration` integer DEFAULT 0,
+	`notes` text,
 	FOREIGN KEY (`task_id`) REFERENCES `tasks`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
