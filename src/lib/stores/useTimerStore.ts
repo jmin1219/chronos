@@ -11,6 +11,7 @@ type TimerState = {
   workDuration: number;
   pauseDuration: number;
   overtimeDuration: number;
+  selectTask: (taskId: number) => void;
   startWork: (taskId: number, duration: number) => void;
   startBreak: (duration: number) => void;
   skipBreak: () => void;
@@ -32,10 +33,14 @@ export const useTimerStore = create<TimerState>((set, get) => ({
   pauseDuration: 0,
   overtimeDuration: 0,
 
+  // Select Task
+  selectTask: (taskId) => {
+    set({ taskId });
+  },
+
   // Start a Work Session
-  startWork: (taskId, duration) =>
+  startWork: (duration) =>
     set({
-      taskId,
       isTimerRunning: true,
       isPaused: false,
       isBreak: false,
