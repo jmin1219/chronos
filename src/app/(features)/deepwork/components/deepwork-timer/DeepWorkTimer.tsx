@@ -23,8 +23,8 @@ export default function DeepWorkTimer() {
       </CardHeader>
       <CardContent>
         <TaskSelector />
-        {/* <TimerDisplay />
-        <TimerControls /> */}
+        <TimerDisplay />
+        {/* <TimerControls /> */}
       </CardContent>
     </Card>
   );

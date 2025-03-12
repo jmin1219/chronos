@@ -1,3 +1,5 @@
+"use client";
+
 import AddTaskDialog from "@/app/(features)/tasks/components/AddTaskDialog";
 import {
   Select,
@@ -24,19 +26,19 @@ export default function TaskSelector() {
         <SelectValue placeholder="Select a task" />
       </SelectTrigger>
       <SelectContent>
-        {/* TODO: Replace with dynamic API fetch of tasks that are not completed */}
         {tasks.length > 0 ? (
+          // Add other task properties like Project Badge, due date, priority, and/or estimated duration
           tasks.map((task: TaskType) => (
             <SelectItem key={task.id} value={String(task.id)}>
               {task.title}
             </SelectItem>
           ))
         ) : (
-          <>
-            <span>No Tasks</span>
-            <SelectSeparator />
+          <div className="w-full flex flex-col py-2">
+            <span className="text-gray-400 text-center">No Tasks</span>
+            <SelectSeparator className="my-2" />
             <AddTaskDialog />
-          </>
+          </div>
         )}
       </SelectContent>
     </Select>
