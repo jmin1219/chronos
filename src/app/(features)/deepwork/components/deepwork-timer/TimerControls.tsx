@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useSaveDeepworkSession } from "@/hooks/useSessionsQuery";
 import { useTimerStore } from "@/lib/stores/useTimerStore";
 
 export default function TimerControls() {
@@ -17,6 +18,8 @@ export default function TimerControls() {
     adjustTime,
     skipBreak,
   } = useTimerStore();
+
+  const { mutate: saveSession } = useSaveDeepworkSession();
 
   const isOvertime = expectedEndTime ? expectedEndTime <= Date.now() : false;
 
@@ -52,14 +55,14 @@ export default function TimerControls() {
             </Button>
             <Button onClick={() => adjustTime(5)}>+ 5 min</Button>
           </div>
-          <Button onClick={endSession}>End Session</Button>
+          <Button onClick={() => endSession(saveSession)}>End Session</Button>
         </>
       )}
 
       {/* OVERTIME MODE */}
       {mode === "work" && isOvertime && (
         <>
-          <Button onClick={endSession}>End Session</Button>
+          <Button onClick={() => endSession(saveSession)}>End Session</Button>
         </>
       )}
 
@@ -74,7 +77,7 @@ export default function TimerControls() {
       {/* BREAK MODE */}
       {mode === "break" && (
         <>
-          <Button onClick={endSession}>End Break</Button>
+          <Button onClick={() => endSession(saveSession)}>End Break</Button>
         </>
       )}
     </div>

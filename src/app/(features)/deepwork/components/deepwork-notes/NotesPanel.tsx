@@ -1,6 +1,9 @@
+"use client";
+
+import { useState } from "react";
 
 export default function NotesPanel() {
-  return (
-    <div>NotesPanel</div>
-  )
+  const [sessionNote, setSessionNote] = useState("");
+
+  return <div>NotesPanel</div>;
 }
