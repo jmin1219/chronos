@@ -14,12 +14,12 @@ import { useTimerStore } from "@/lib/stores/useTimerStore";
 import { TaskType } from "@/lib/types/tasks";
 
 export default function TaskSelector() {
-  const { isTimerRunning, selectTask } = useTimerStore();
+  const { isTimerRunning, setTask } = useTimerStore();
   const { data: tasks = [] } = useTasksQuery();
 
   return (
     <Select
-      onValueChange={(value) => selectTask(Number(value))}
+      onValueChange={(value) => setTask(Number(value))}
       disabled={isTimerRunning}
     >
       <SelectTrigger>

@@ -41,9 +41,7 @@ export const deepWorkSessions = sqliteTable("deepwork_sessions", {
   taskId: integer("task_id").references(() => tasks.id), // Links session to a scheduled task
   startTime: integer("start_time").notNull(), // Stores UNIX timestamp
   endTime: integer("end_time").default(sql<number | null>`NULL`), // Stores UNIX timestamp
-  sessionDuration: integer("session_duration"), // Auto-calculated: endTime - startTime OR workDuration + pauseDuration
-  workDuration: integer("work_duration"), // Active work time (ie. sessionDuration - pauseDuration)
-  pauseDuration: integer("pause_duration").default(0), // Total paused time during a session
+  sessionDuration: integer("session_duration"),
   notes: text("notes"), // User notes for the session
 });
 

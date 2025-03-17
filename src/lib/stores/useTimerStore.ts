@@ -1,151 +1,111 @@
 import { create } from "zustand";
 
 type TimerState = {
+  // Session State
   taskId: number | null;
-  isTimerRunning: boolean; // Tracks if timer is running for EITHER work or break.
-  isPaused: boolean;
-  isBreak: boolean;
-  timeLeft: number;
-  startTime: number | null;
-  sessionDuration: number;
+  mode: "work" | "break" | "idle";
+  // Timer State
+  isRunning: boolean;
   workDuration: number;
-  pauseDuration: number;
-  overtimeDuration: number;
-  selectTask: (taskId: number) => void;
-  startWork: (taskId: number, duration: number) => void;
-  startBreak: (duration: number) => void;
-  skipBreak: () => void;
-  pause: () => void;
-  resume: () => void;
-  reset: () => void;
-  endSession: () => void;
+  startTime: number | null;
+  expectedEndTime: number | null;
+  sessionDuration: number; // Total session including overtime (actual endTime - startTime)
 };
 
-export const useTimerStore = create<TimerState>((set, get) => ({
+type TimerActions = {
+  setTask: (taskId: number) => void;
+  adjustTime: (minutes: number) => void;
+  startWork: () => void;
+  endSession: () => void;
+  startBreak: () => void;
+};
+
+export const useTimerStore = create<TimerState & TimerActions>((set, get) => ({
   taskId: null,
-  isTimerRunning: false,
-  isPaused: false,
-  isBreak: false,
-  timeLeft: 25 * 60,
+  mode: "idle",
+  isRunning: false,
+  workDuration: 25 * 60,
   startTime: null,
+  expectedEndTime: null,
   sessionDuration: 0,
-  workDuration: 0,
-  pauseDuration: 0,
-  overtimeDuration: 0,
 
   // Select Task
-  selectTask: (taskId) => {
-    set({ taskId });
-  },
+  setTask: (taskId) => set({ taskId }),
 
-  // Start a Work Session
-  startWork: (duration) =>
-    set({
-      isTimerRunning: true,
-      isPaused: false,
-      isBreak: false,
-      timeLeft: duration,
-      startTime: Date.now(),
-      sessionDuration: 0,
-      workDuration: 0,
-      pauseDuration: 0,
-      overtimeDuration: 0,
-    }),
-
-  // Start a Break Session
-  startBreak: (duration) =>
-    set({
-      isTimerRunning: true,
-      isPaused: false,
-      isBreak: true,
-      timeLeft: duration,
-      startTime: Date.now(),
-      sessionDuration: 0,
-      workDuration: 0,
-      pauseDuration: 0,
-      overtimeDuration: 0,
-    }),
-
-  // Skip Break (Return to Task Selection)
-  skipBreak: () =>
-    set({
-      taskId: null,
-      isTimerRunning: false,
-      isPaused: false,
-      isBreak: false,
-      timeLeft: 25 * 60,
-      startTime: null,
-      sessionDuration: 0,
-      workDuration: 0,
-      pauseDuration: 0,
-      overtimeDuration: 0,
-    }),
-
-  // Pause current work session
-  pause: () => {
-    const { pauseDuration, isTimerRunning, isBreak, startTime, timeLeft } =
-      get();
-    if (isTimerRunning && !isBreak) {
-      const now = Date.now();
+  // Adjust timeLeft during or before starting a work session
+  adjustTime: (minutes) => {
+    const { mode, workDuration, expectedEndTime } = get();
+    if (mode === "break") return;
+    if (mode === "idle") {
       set({
-        isTimerRunning: false,
-        isPaused: true,
-        timeLeft: Math.max(timeLeft - (now - (startTime || now)) / 1000, 0),
-        pauseDuration: pauseDuration + (now - (startTime || now)),
+        workDuration: workDuration + minutes * 60,
+      });
+    }
+    if (mode === "work" && expectedEndTime) {
+      set({
+        expectedEndTime: expectedEndTime + minutes * 60 * 1000,
       });
     }
   },
 
-  // Resume current work session from pause
-  resume: () => {
+  // Start a Work Session
+  startWork: () => {
+    const { taskId, isRunning, workDuration } = get();
+    if (isRunning) return;
+    if (!taskId) return alert("Please select a task to work on.");
+
     set({
-      isTimerRunning: true,
-      isPaused: false,
+      mode: "work",
+      isRunning: true,
+      startTime: Date.now(),
+      expectedEndTime: Date.now() + workDuration * 1000,
     });
   },
 
-  // Reset Session and Timer (End Session)
-  reset: () =>
-    set({
-      taskId: null,
-      isTimerRunning: false,
-      isPaused: false,
-      isBreak: false,
-      timeLeft: 25 * 60,
-      startTime: null,
-      sessionDuration: 0,
-      workDuration: 0,
-      pauseDuration: 0,
-      overtimeDuration: 0,
-    }),
-
   // End Session
   endSession: () => {
-    const { startTime, pauseDuration, timeLeft } = get();
-    const now = Date.now();
-    const sessionDuration = startTime ? now - startTime : 0;
-    const workDuration = sessionDuration - pauseDuration;
-    const overtimeDuration = timeLeft < 0 ? Math.abs(timeLeft) : 0;
-    console.log("Session Ended:", {
-      startTime,
-      endTime: now,
-      sessionDuration,
-      workDuration,
-      pauseDuration,
-      overtimeDuration,
-    });
+    const { taskId, startTime, mode } = get();
+    if (!startTime) return;
+    const actualEndTime = Date.now();
+    const sessionDuration = (actualEndTime - startTime) / 1000;
 
+    if (mode !== "break") {
+      console.log("Session Ended:", {
+        taskId,
+        startTime,
+        actualEndTime,
+        sessionDuration,
+      });
+    }
     set({
       taskId: null,
-      isTimerRunning: false,
-      isPaused: false,
-      isBreak: false,
-      timeLeft: 25 * 60,
+      isRunning: false,
+      mode: "idle",
       startTime: null,
-      sessionDuration,
-      workDuration,
-      pauseDuration,
-      overtimeDuration,
+      workDuration: 25 * 60,
+      expectedEndTime: null,
     });
+  },
+
+  // Start a Break Session
+  startBreak: () => {
+    const { mode, isRunning } = get();
+    if (mode === "break" || isRunning) return;
+    set({
+      mode: "break",
+      isRunning: true,
+      startTime: Date.now(),
+      expectedEndTime: Date.now() + 5 * 60 * 1000, // Set default 5 min break
+    });
+
+    setTimeout(() => {
+      // Automatically set work session default after 5 min break.
+      set({
+        mode: "idle",
+        isRunning: false,
+        startTime: null,
+        expectedEndTime: null,
+      });
+    }, 5 * 60 * 1000);
   },
 }));
