@@ -5,23 +5,23 @@ import { useEffect, useState } from "react";
 
 export default function TimerDisplay() {
   const { expectedEndTime, isRunning, mode, workDuration } = useTimerStore();
-  const [displayTime, setDisplayTime] = useState(25 * 60);
+  const [displayTime, setDisplayTime] = useState(workDuration);
 
   useEffect(() => {
-    if (mode === "idle") return setDisplayTime(workDuration);
+    let frameId: number;
 
     const updateTime = () => {
-      if (!expectedEndTime) return;
+      if (!expectedEndTime) return setDisplayTime(workDuration);
+
       const remainingTime = Math.floor((expectedEndTime - Date.now()) / 1000);
       setDisplayTime(remainingTime);
+
+      frameId = requestAnimationFrame(updateTime); // continuously update time (better performance than setTimeout)
     };
 
     updateTime();
 
-    if (isRunning) {
-      const interval = setInterval(updateTime, 1000);
-      return () => clearInterval(interval);
-    }
+    return () => cancelAnimationFrame(frameId);
   }, [expectedEndTime, mode, isRunning, workDuration]);
 
   // Removed interval update to prevent UI lag; displayTime now updates immediately via timeLeft changes.
@@ -38,7 +38,7 @@ export default function TimerDisplay() {
           displayTime < 0 ? "text-green-500" : ""
         }`}
       >
-        <span>MODE: {mode}</span>
+        <span className="capitalize">{mode}</span>
         <div>
           {displayTime < 0 ? `+${minutes}:${seconds}` : `${minutes}:${seconds}`}
         </div>

@@ -10,6 +10,7 @@ type TimerState = {
   startTime: number | null;
   expectedEndTime: number | null;
   sessionDuration: number; // Total session including overtime (actual endTime - startTime)
+  isBreakPending: boolean;
 };
 
 type TimerActions = {
@@ -18,6 +19,7 @@ type TimerActions = {
   startWork: () => void;
   endSession: () => void;
   startBreak: () => void;
+  skipBreak: () => void;
 };
 
 export const useTimerStore = create<TimerState & TimerActions>((set, get) => ({
@@ -28,6 +30,7 @@ export const useTimerStore = create<TimerState & TimerActions>((set, get) => ({
   startTime: null,
   expectedEndTime: null,
   sessionDuration: 0,
+  isBreakPending: false,
 
   // Select Task
   setTask: (taskId) => set({ taskId }),
@@ -36,14 +39,17 @@ export const useTimerStore = create<TimerState & TimerActions>((set, get) => ({
   adjustTime: (minutes) => {
     const { mode, workDuration, expectedEndTime } = get();
     if (mode === "break") return;
+
     if (mode === "idle") {
       set({
         workDuration: workDuration + minutes * 60,
       });
     }
     if (mode === "work" && expectedEndTime) {
+      const newExpectedEndTime = expectedEndTime + minutes * 60 * 1000;
+      if (newExpectedEndTime < Date.now()) return;
       set({
-        expectedEndTime: expectedEndTime + minutes * 60 * 1000,
+        expectedEndTime: newExpectedEndTime,
       });
     }
   },
@@ -64,48 +70,67 @@ export const useTimerStore = create<TimerState & TimerActions>((set, get) => ({
 
   // End Session
   endSession: () => {
-    const { taskId, startTime, mode } = get();
+    const { taskId, startTime, mode, workDuration } = get();
     if (!startTime) return;
+
     const actualEndTime = Date.now();
     const sessionDuration = (actualEndTime - startTime) / 1000;
 
-    if (mode !== "break") {
+    if (mode === "work") {
       console.log("Session Ended:", {
         taskId,
         startTime,
         actualEndTime,
         sessionDuration,
       });
+
+      set({
+        isRunning: false,
+        mode: "idle",
+        startTime: null,
+        expectedEndTime: null,
+        isBreakPending: true,
+        workDuration,
+      });
+    } else if (mode === "break") {
+      set({
+        isRunning: false,
+        mode: "idle",
+        startTime: null,
+        expectedEndTime: null,
+        isBreakPending: false,
+        workDuration,
+      });
     }
-    set({
-      taskId: null,
-      isRunning: false,
-      mode: "idle",
-      startTime: null,
-      workDuration: 25 * 60,
-      expectedEndTime: null,
-    });
   },
 
   // Start a Break Session
   startBreak: () => {
-    const { mode, isRunning } = get();
+    const { mode, isRunning, workDuration } = get();
     if (mode === "break" || isRunning) return;
+
     set({
       mode: "break",
+      isBreakPending: false,
       isRunning: true,
       startTime: Date.now(),
       expectedEndTime: Date.now() + 5 * 60 * 1000, // Set default 5 min break
     });
 
     setTimeout(() => {
-      // Automatically set work session default after 5 min break.
       set({
         mode: "idle",
         isRunning: false,
         startTime: null,
         expectedEndTime: null,
+        workDuration,
       });
     }, 5 * 60 * 1000);
+  },
+
+  skipBreak: () => {
+    set({
+      isBreakPending: false,
+    });
   },
 }));
