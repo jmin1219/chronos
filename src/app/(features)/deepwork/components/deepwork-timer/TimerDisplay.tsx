@@ -38,7 +38,7 @@ export default function TimerDisplay() {
           displayTime < 0 ? "text-green-500" : ""
         }`}
       >
-        <span className="capitalize">{mode}</span>
+        <span className="capitalize text-xl">{mode}</span>
         <div>
           {displayTime < 0 ? `+${minutes}:${seconds}` : `${minutes}:${seconds}`}
         </div>

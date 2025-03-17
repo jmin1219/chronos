@@ -41,7 +41,7 @@ export const deepWorkSessions = sqliteTable("deepwork_sessions", {
   taskId: integer("task_id").references(() => tasks.id), // Links session to a scheduled task
   startTime: integer("start_time").notNull(), // Stores UNIX timestamp
   endTime: integer("end_time").default(sql<number | null>`NULL`), // Stores UNIX timestamp
-  sessionDuration: integer("session_duration"),
+  sessionDuration: integer("session_duration"), // total session duration
   notes: text("notes"), // User notes for the session
 });
 

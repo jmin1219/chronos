@@ -69,39 +69,45 @@ export const useTimerStore = create<TimerState & TimerActions>((set, get) => ({
   },
 
   // End Session
-  endSession: () => {
+  endSession: async () => {
     const { taskId, startTime, mode, workDuration } = get();
-    if (!startTime) return;
+    if (!startTime || !taskId) return;
 
     const actualEndTime = Date.now();
     const sessionDuration = (actualEndTime - startTime) / 1000;
 
     if (mode === "work") {
-      console.log("Session Ended:", {
-        taskId,
-        startTime,
-        actualEndTime,
-        sessionDuration,
-      });
+      try {
+        const response = await fetch("/api/deepwork/sessions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            taskId,
+            startTime,
+            endTime: actualEndTime,
+            sessionDuration,
+          }),
+        });
 
-      set({
-        isRunning: false,
-        mode: "idle",
-        startTime: null,
-        expectedEndTime: null,
-        isBreakPending: true,
-        workDuration,
-      });
-    } else if (mode === "break") {
-      set({
-        isRunning: false,
-        mode: "idle",
-        startTime: null,
-        expectedEndTime: null,
-        isBreakPending: false,
-        workDuration,
-      });
+        if (!response.ok) {
+          throw new Error("Failed to save session");
+        }
+
+        console.log("Session saved successfully:", response);
+      } catch (error) {
+        console.error("Error saving session:", error);
+      }
     }
+
+    // Reset State for both Work & Break
+    set({
+      isRunning: false,
+      mode: "idle",
+      startTime: null,
+      expectedEndTime: null,
+      isBreakPending: mode === "work", // Only prompt break after work session
+      workDuration,
+    });
   },
 
   // Start a Break Session
