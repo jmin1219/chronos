@@ -60,15 +60,18 @@ export default function NotesPanel() {
       <div className="flex justify-between mt-4 border-b border-gray-700 pb-2 items-center">
         <p className="text-lg">Recent Notes</p>
         <div className="flex gap-2 text-sm text-gray-400">
+          {/* TODO: Improve filter button UI to look like hybrid button and checkbox */}
           <Button
             variant={filter === "task" ? "default" : "outline"}
             onClick={() => setFilter(filter === "task" ? null : "task")}
+            disabled={taskId === null}
           >
             Current Task
           </Button>
           <Button
             variant={filter === "project" ? "default" : "outline"}
             onClick={() => setFilter(filter === "project" ? null : "project")}
+            disabled={taskId === null}
           >
             Current Project
           </Button>
@@ -117,7 +120,7 @@ export default function NotesPanel() {
                   )}
                 </div>
                 {/* Session Date & Duration */}
-                <div className="text-xs text-gray-400 flex justify-between mb-2">
+                <div className="text-xs text-white flex justify-between mb-2">
                   <span>{formatRelativeDate(session.startTime)}</span>
                   <span>{formatDuration(session.sessionDuration)}</span>
                 </div>

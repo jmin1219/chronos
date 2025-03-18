@@ -35,6 +35,7 @@ import { TaskFormValuesType, TaskType } from "@/lib/types/tasks";
 import { ProjectType } from "@/lib/types/projects";
 import { Separator } from "@/components/ui/separator";
 import AddProjectDialog from "./AddProjectDialog";
+import { Badge } from "@/components/ui/badge";
 
 export default function TaskForm({
   onSubmitSuccess,
@@ -153,7 +154,9 @@ export default function TaskForm({
                     ) : projects.length > 0 ? (
                       projects.map((project: ProjectType) => (
                         <SelectItem key={project.id} value={String(project.id)}>
-                          {project.name}
+                          <Badge style={{ backgroundColor: project.color }}>
+                            {project.name}
+                          </Badge>
                         </SelectItem>
                       ))
                     ) : (
