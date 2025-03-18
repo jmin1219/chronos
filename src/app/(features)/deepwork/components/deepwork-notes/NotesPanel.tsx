@@ -1,6 +1,8 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useProjectsQuery } from "@/hooks/useProjectsQuery";
 import { useSessionsQuery } from "@/hooks/useSessionsQuery";
 import { useTasksQuery } from "@/hooks/useTasksQuery";
@@ -8,20 +10,44 @@ import { useTimerStore } from "@/lib/stores/useTimerStore";
 import { DeepWorkSessionType } from "@/lib/types/deepwork_sessions";
 import { ProjectType } from "@/lib/types/projects";
 import { TaskType } from "@/lib/types/tasks";
+import { formatDuration, formatRelativeDate } from "@/lib/utils";
+import { useState } from "react";
 
 export default function NotesPanel() {
-  const { notes, setNotes, mode } = useTimerStore();
+  const { notes, setNotes, mode, taskId } = useTimerStore();
   const { data: recentSessions = [], isLoading, error } = useSessionsQuery();
   const { data: tasks = [] } = useTasksQuery();
   const { data: projects = [] } = useProjectsQuery();
+
+  const currentTask = tasks?.find((t: TaskType) => t.id === taskId) ?? null;
+  const currentProject =
+    projects?.find((p: ProjectType) => p.id === currentTask?.projectId) ?? null;
+
+  const [filter, setFilter] = useState<"task" | "project" | null>(null);
+
+  const filteredSessions = recentSessions
+    .sort(
+      (a: DeepWorkSessionType, b: DeepWorkSessionType) =>
+        b.startTime - a.startTime
+    )
+    .filter((session: DeepWorkSessionType) => {
+      if (filter === "task") return session.taskId === taskId;
+      if (filter === "project") {
+        const sessionTask = tasks?.find(
+          (t: TaskType) => t.id === session.taskId
+        );
+        return sessionTask?.projectId === currentProject?.id;
+      }
+      return true; // Shows all session notes when neither filter is clicked.
+    });
 
   return (
     <div className="flex flex-col h-full bg-gray-900 rounded-lg p-4">
       {/* CURRENT SESSION NOTE TEXTAREA */}
       <div>
-        <span className="text-xl mb-3">Notes</span>
+        <p className="text-xl mb-3 font-semibold text-white">Notes</p>
         <textarea
-          className="w-full h-80 bg-gray-800 text-white p-3 rounded-lg resize-none"
+          className="w-full h-80 bg-gray-800 text-white p-3 rounded-lg resize-none border border-gray-700"
           placeholder="Writing is thinking. Enter session notes here..."
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
@@ -29,48 +55,82 @@ export default function NotesPanel() {
         />
       </div>
 
-      {/* RECENT NOTES SECTION */}
-      {/* NOTES FILTERS */}
-      <div className="flex justify-between text-sm text-gray-400 mt-4">
-        <span className="cursor-pointer hover:text-white">Recent Notes</span>
-        <span className="cursor-pointer hover:text-white">Current Task</span>
-        <span className="cursor-pointer hover:text-white">Current Project</span>
+      {/* RECENT NOTES */}
+      {/* FILTER BUTTONS */}
+      <div className="flex justify-between mt-4 border-b border-gray-700 pb-2 items-center">
+        <p className="text-lg">Recent Notes</p>
+        <div className="flex gap-2 text-sm text-gray-400">
+          <Button
+            variant={filter === "task" ? "default" : "outline"}
+            onClick={() => setFilter(filter === "task" ? null : "task")}
+          >
+            Current Task
+          </Button>
+          <Button
+            variant={filter === "project" ? "default" : "outline"}
+            onClick={() => setFilter(filter === "project" ? null : "project")}
+          >
+            Current Project
+          </Button>
+        </div>
       </div>
 
-      {/* NOTES LIST */}
-      <div className="mt-3 flex-1 overflow-y-auto">
+      {/* RECENT NOTES LIST */}
+      <div className="mt-3 flex-1 overflow-y-auto space-y-3">
         {isLoading ? (
-          <p className="text-gray-400 text-center">Loading session notes...</p>
+          <div className="space-y-3">
+            {[...Array(5)].map((_, index) => (
+              <div key={index} className="p-2">
+                <Skeleton className="h-4 w-2/3 mb-2 bg-gray-700" />
+                <Skeleton className="h-3 w-1/3 mb-2 bg-gray-700" />
+                <Skeleton className="h-3 w-full bg-gray-700" />
+              </div>
+            ))}
+          </div>
         ) : error ? (
-          <p className="text-red-500 text-center">Error loading sessions.</p>
-        ) : recentSessions.length > 0 ? (
-          recentSessions.map((session: DeepWorkSessionType) => {
-            const task = tasks.find((t: TaskType) => t.id === session.taskId);
-            const project = projects.find(
-              (p: ProjectType) => p.id === task.projectId
-            );
+          <p className="text-red-500 text-center mt-5">
+            Error loading sessions.
+          </p>
+        ) : filteredSessions.length > 0 ? (
+          filteredSessions.map((session: DeepWorkSessionType) => {
+            const task =
+              tasks?.find((t: TaskType) => t.id === session.taskId) ?? null;
+            const project =
+              projects?.find((p: ProjectType) => p.id === task?.projectId) ??
+              null;
             return (
-              // TODO: Add edit session button to each
-              <div key={session.id} className="mb-4 p-3 bg-gray-800 rounded-lg">
-                <div className="text-sm font-bold">{task.title}</div>
-                <div className="text-sm font-bold">
-                  {session.sessionDuration}
+              <div
+                key={session.id}
+                className="p-2 bg-gray-800 rounded-lg shadow-md border border-gray-700"
+              >
+                {/* Task Title & Project Badge */}
+                <div className="flex justify-between items-center mb-1">
+                  <div className="text-sm font-bold">
+                    {task?.title ?? "Unkown Task"}
+                  </div>
+                  {project && (
+                    <Badge
+                      style={{ backgroundColor: project?.color ?? "#CCCCCC" }}
+                    >
+                      {project.name ?? "Unknown Project"}
+                    </Badge>
+                  )}
                 </div>
-                <Badge style={{ backgroundColor: project.color }}>
-                  {project.name}
-                </Badge>
-                <div className="text-xs text-gray-400">
-                  {/* TODO: Make date relative? Function in utils.ts */}
-                  {new Date(session.startTime).toLocaleDateString()}
+                {/* Session Date & Duration */}
+                <div className="text-xs text-gray-400 flex justify-between mb-2">
+                  <span>{formatRelativeDate(session.startTime)}</span>
+                  <span>{formatDuration(session.sessionDuration)}</span>
                 </div>
                 <p className="text-gray-400 text-sm">
-                  {session.notes || "No notes"}
+                  {session.notes || "No notes added."}
                 </p>
               </div>
             );
           })
         ) : (
-          <p className="text-gray-400 text-center">No past session notes.</p>
+          <p className="text-gray-400 text-center mt-5">
+            No past session notes.
+          </p>
         )}
       </div>
     </div>

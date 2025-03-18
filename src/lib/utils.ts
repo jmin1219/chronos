@@ -31,6 +31,43 @@ export const TASK_PRIORITIES: Record<TaskPriorityKey, TaskPriority> = {
   },
 };
 
-// TODO: Create a relative Date calculator
+export function formatDuration(duration: number): string {
+  const minutes = Math.floor(duration / 60);
+  const seconds = Math.floor(duration % 60);
+  return `${minutes}m ${seconds}s`;
+}
 
-// TODO: Create a duration calculator (min, sec)
+export function formatRelativeDate(date: string | number | Date): string {
+  const now = new Date();
+  const targetDate = new Date(date);
+
+  const nowMidnight = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+  );
+  const targetMidnight = new Date(
+    targetDate.getFullYear(),
+    targetDate.getMonth(),
+    targetDate.getDate()
+  );
+
+  const diffInDays = Math.floor(
+    (nowMidnight.getTime() - targetMidnight.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  if (diffInDays === 0) {
+    return "Today";
+  }
+  if (diffInDays === 1) {
+    return "Yesterday";
+  }
+  if (diffInDays < 7) {
+    return `${diffInDays} days ago`;
+  }
+  if (diffInDays < 14) {
+    return "Last week";
+  }
+
+  return targetDate.toLocaleDateString();
+}
