@@ -12,15 +12,19 @@ type TimerState = {
   expectedEndTime: number | null;
   sessionDuration: number; // Total session including overtime (actual endTime - startTime)
   isBreakPending: boolean;
+  notes: string;
 };
 
 type TimerActions = {
   setTask: (taskId: number) => void;
   adjustTime: (minutes: number) => void;
   startWork: () => void;
-  endSession: (saveSession: (session: DeepWorkSessionType) => void) => void;
+  endSession: (
+    saveSession: (session: Partial<DeepWorkSessionType>) => void
+  ) => void;
   startBreak: () => void;
   skipBreak: () => void;
+  setNotes: (notes: string) => void;
 };
 
 export const useTimerStore = create<TimerState & TimerActions>((set, get) => {
@@ -33,6 +37,7 @@ export const useTimerStore = create<TimerState & TimerActions>((set, get) => {
     expectedEndTime: null,
     sessionDuration: 0,
     isBreakPending: false,
+    notes: "",
 
     // Select Task
     setTask: (taskId) => set({ taskId }),
@@ -71,12 +76,11 @@ export const useTimerStore = create<TimerState & TimerActions>((set, get) => {
     },
 
     // End Session
-    endSession: async (saveSession: (session: DeepWorkSessionType) => void) => {
-      const { taskId, startTime, mode, workDuration } = get();
+    endSession: async (
+      saveSession: (session: Partial<DeepWorkSessionType>) => void
+    ) => {
+      const { taskId, startTime, mode, workDuration, notes } = get();
       if (!startTime || !taskId) return;
-
-      // TODO: Fix notes adding here
-      const notes = "";
 
       const actualEndTime = Date.now();
       const sessionDuration = (actualEndTime - startTime) / 1000;
@@ -104,6 +108,7 @@ export const useTimerStore = create<TimerState & TimerActions>((set, get) => {
         expectedEndTime: null,
         isBreakPending: mode === "work", // Only prompt break after work session
         workDuration,
+        notes: "",
       });
     },
 
@@ -136,5 +141,7 @@ export const useTimerStore = create<TimerState & TimerActions>((set, get) => {
         isBreakPending: false,
       });
     },
+
+    setNotes: (notes) => set({ notes }),
   };
 });
