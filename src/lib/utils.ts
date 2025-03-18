@@ -30,3 +30,7 @@ export const TASK_PRIORITIES: Record<TaskPriorityKey, TaskPriority> = {
     title: "🔵 Could Do",
   },
 };
+
+// TODO: Create a relative Date calculator
+
+// TODO: Create a duration calculator (min, sec)
