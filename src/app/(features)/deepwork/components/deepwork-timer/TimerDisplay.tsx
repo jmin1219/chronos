@@ -16,7 +16,7 @@ export default function TimerDisplay() {
       const remainingTime = Math.floor((expectedEndTime - Date.now()) / 1000);
       setDisplayTime(remainingTime);
 
-      frameId = requestAnimationFrame(updateTime); // continuously update time (better performance than setTimeout)
+      frameId = requestAnimationFrame(updateTime);
     };
 
     updateTime();
@@ -24,25 +24,19 @@ export default function TimerDisplay() {
     return () => cancelAnimationFrame(frameId);
   }, [expectedEndTime, mode, isRunning, workDuration]);
 
-  // Removed interval update to prevent UI lag; displayTime now updates immediately via timeLeft changes.
-
   const minutes = Math.floor(Math.abs(displayTime) / 60)
     .toString()
     .padStart(2, "0");
   const seconds = (Math.abs(displayTime) % 60).toString().padStart(2, "0");
 
   return (
-    <div className="p-4 border rounded-lg bg-white shadow-md text-center">
-      <div
-        className={`flex flex-col text-4xl font-bold ${
-          displayTime < 0 ? "text-green-500" : ""
-        }`}
-      >
-        <span className="capitalize text-xl">{mode}</span>
-        <div>
-          {displayTime < 0 ? `+${minutes}:${seconds}` : `${minutes}:${seconds}`}
-        </div>
+    <div className="w-full flex flex-col items-center justify-center text-white">
+      <div className="text-6xl font-bold tracking-widest">
+        {displayTime < 0 ? `+${minutes}:${seconds}` : `${minutes}:${seconds}`}
       </div>
+      <span className="mt-2 text-lg font-medium uppercase text-gray-400">
+        {mode}
+      </span>
     </div>
   );
 }

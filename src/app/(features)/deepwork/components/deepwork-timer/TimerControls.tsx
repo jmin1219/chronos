@@ -24,7 +24,7 @@ export default function TimerControls() {
   const isOvertime = expectedEndTime ? expectedEndTime <= Date.now() : false;
 
   return (
-    <div className="flex flex-col gap-2 mt-4">
+    <div className="flex flex-col gap-4">
       {/* IDLE MODE - Before starting work session */}
       {mode === "idle" && !isBreakPending && (
         <>
@@ -32,12 +32,19 @@ export default function TimerControls() {
             <Button
               onClick={() => adjustTime(-5)}
               disabled={workDuration <= 5 * 60}
+              className="w-1/2"
             >
               - 5 min
             </Button>
-            <Button onClick={() => adjustTime(5)}>+ 5 min</Button>
+            <Button onClick={() => adjustTime(5)} className="w-1/2">
+              + 5 min
+            </Button>
           </div>
-          <Button onClick={startWork} disabled={isRunning || !taskId}>
+          <Button
+            onClick={startWork}
+            disabled={isRunning || !taskId}
+            className="w-full"
+          >
             Start Work Session
           </Button>
         </>
@@ -50,34 +57,50 @@ export default function TimerControls() {
             <Button
               onClick={() => adjustTime(-5)}
               disabled={expectedEndTime - Date.now() <= 5 * 60 * 1000}
+              className="w-1/2"
             >
               - 5 min
             </Button>
-            <Button onClick={() => adjustTime(5)}>+ 5 min</Button>
+            <Button onClick={() => adjustTime(5)} className="w-1/2">
+              + 5 min
+            </Button>
           </div>
-          <Button onClick={() => endSession(saveSession)}>End Session</Button>
+          <Button
+            onClick={() => endSession((session) => saveSession(session))}
+            className="w-full"
+          >
+            End Session
+          </Button>
         </>
       )}
 
       {/* OVERTIME MODE */}
       {mode === "work" && isOvertime && (
         <>
-          <Button onClick={() => endSession(saveSession)}>End Session</Button>
+          <Button onClick={() => endSession(saveSession)} className="w-full">
+            End Session
+          </Button>
         </>
       )}
 
       {/* BREAK PENDING MODE */}
       {isBreakPending && (
         <>
-          <Button onClick={startBreak}>Start Break</Button>
-          <Button onClick={skipBreak}>Skip Break</Button>
+          <Button onClick={startBreak} className="w-full">
+            Start Break
+          </Button>
+          <Button onClick={skipBreak} className="w-full">
+            Skip Break
+          </Button>
         </>
       )}
 
       {/* BREAK MODE */}
       {mode === "break" && (
         <>
-          <Button onClick={() => endSession(saveSession)}>End Break</Button>
+          <Button onClick={() => endSession(saveSession)} className="w-full">
+            End Break
+          </Button>
         </>
       )}
     </div>

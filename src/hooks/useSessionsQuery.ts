@@ -16,8 +16,8 @@ export const useSessionsQuery = () => {
 
 export const useSaveDeepworkSession = () => {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (newSession: DeepWorkSessionType) => {
+  const mutation = useMutation({
+    mutationFn: async (newSession: Partial<DeepWorkSessionType>) => {
       const res = await fetch("/api/deepwork_sessions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -29,4 +29,5 @@ export const useSaveDeepworkSession = () => {
       queryClient.invalidateQueries({ queryKey: ["deepwork_sessions"] });
     },
   });
+  return mutation;
 };

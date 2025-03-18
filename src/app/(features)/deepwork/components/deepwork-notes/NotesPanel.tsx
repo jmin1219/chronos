@@ -106,26 +106,30 @@ export default function NotesPanel() {
                 key={session.id}
                 className="p-2 bg-gray-800 rounded-lg shadow-md border border-gray-700"
               >
-                {/* Task Title & Project Badge */}
-                <div className="flex justify-between items-center mb-1">
-                  <div className="text-sm font-bold">
-                    {task?.title ?? "Unkown Task"}
+                <div className="flex justify-between mb-1">
+                  {/* Left: Task Title & Project Badge */}
+                  <div className="flex flex-col gap-1">
+                    {project && (
+                      <Badge
+                        style={{ backgroundColor: project?.color ?? "#CCCCCC" }}
+                      >
+                        {project.name ?? "Unknown Project"}
+                      </Badge>
+                    )}
+                    <p className="text-sm font-bold">
+                      {task?.title ?? "Unkown Task"}
+                    </p>
                   </div>
-                  {project && (
-                    <Badge
-                      style={{ backgroundColor: project?.color ?? "#CCCCCC" }}
-                    >
-                      {project.name ?? "Unknown Project"}
-                    </Badge>
-                  )}
-                </div>
-                {/* Session Date & Duration */}
-                <div className="text-xs text-white flex justify-between mb-2">
-                  <span>{formatRelativeDate(session.startTime)}</span>
-                  <span>{formatDuration(session.sessionDuration)}</span>
+                  {/* Right: Session Date & Duration */}
+                  <div className="text-xs text-white flex flex-col items-end gap-1">
+                    <p>{formatRelativeDate(session.startTime)}</p>
+                    <p>{formatDuration(session.sessionDuration)}</p>
+                  </div>
                 </div>
                 <p className="text-gray-400 text-sm">
-                  {session.notes || "No notes added."}
+                  {session.notes || (
+                    <span className="italic text-xs">No notes added</span>
+                  )}
                 </p>
               </div>
             );

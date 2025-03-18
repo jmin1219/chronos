@@ -19,7 +19,7 @@ export default function AddTaskDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild autoFocus={open}>
+      <DialogTrigger asChild autoFocus={open} className="w-full">
         <Button>
           <CirclePlus />
           Add New Task

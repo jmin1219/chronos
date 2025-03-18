@@ -22,7 +22,7 @@ export default function TaskSelector() {
       onValueChange={(value) => setTask(Number(value))}
       disabled={isRunning}
     >
-      <SelectTrigger>
+      <SelectTrigger className="w-full">
         <SelectValue placeholder="Select a task" />
       </SelectTrigger>
       <SelectContent>
@@ -43,7 +43,9 @@ export default function TaskSelector() {
           </div>
         )}
         <SelectSeparator className="my-2" />
-        <AddTaskDialog />
+        <div className="w-full flex justify-center mt-2">
+          <AddTaskDialog />
+        </div>
       </SelectContent>
     </Select>
   );
