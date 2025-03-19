@@ -45,9 +45,9 @@ export default function NotesPanel() {
     <div className="flex flex-col h-full bg-gray-900 rounded-lg p-4">
       {/* CURRENT SESSION NOTE TEXTAREA */}
       <div>
-        <p className="text-xl mb-3 font-semibold text-white">Notes</p>
+        <p className="text-lg mb-2  text-white">Session Notes</p>
         <textarea
-          className="w-full h-80 bg-gray-800 text-white p-3 rounded-lg resize-none border border-gray-700"
+          className="w-full h-60 bg-gray-800 text-white p-3 rounded-lg resize-none border border-gray-700"
           placeholder="Writing is thinking. Enter session notes here..."
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
