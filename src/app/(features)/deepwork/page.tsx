@@ -11,14 +11,17 @@ export default function DeepWorkPage() {
         <DeepWorkTimer />
       </div>
       <div className="w-1/2 p-3 flex flex-col">
-        <Tabs defaultValue="notes" className="w-full h-full flex flex-col">
+        {/* TODO: Change default value to notes after done with calendar panel */}
+        <Tabs defaultValue="calendar" className="w-full h-full flex flex-col">
           <div className="flex justify-center">
             <TabsList className="w-1/2">
-              <TabsTrigger value="notes" className="w-full">
-                Notes
+              <TabsTrigger value="notes" className="w-full gap-3">
+                <span>📝</span>
+                <span>Notes</span>
               </TabsTrigger>
-              <TabsTrigger value="calendar" className="w-full">
-                Calendar
+              <TabsTrigger value="calendar" className="w-full gap-3">
+                <span>🗓️</span>
+                <span>Calendar</span>
               </TabsTrigger>
             </TabsList>
           </div>

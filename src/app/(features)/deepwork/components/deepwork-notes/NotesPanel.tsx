@@ -44,7 +44,7 @@ export default function NotesPanel() {
   return (
     <div className="flex flex-col h-full bg-gray-900 rounded-lg p-4">
       {/* CURRENT SESSION NOTE TEXTAREA */}
-      <div>
+      <div className="mb-3">
         <p className="text-lg mb-2  text-white">Session Notes</p>
         <textarea
           className="w-full h-60 bg-gray-800 text-white p-3 rounded-lg resize-none border border-gray-700"
