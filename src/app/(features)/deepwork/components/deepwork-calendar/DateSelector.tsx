@@ -30,7 +30,7 @@ export default function DateSelector({
           onClick={() =>
             onChange(new Date(selectedDate.setDate(selectedDate.getDate() - 1)))
           }
-          className="border border-slate-400 rounded h-10"
+          className="border border-slate-400 rounded h-10 w-10"
         >
           <ChevronLeftIcon className="w-5 h-5" />
         </Button>
@@ -40,7 +40,7 @@ export default function DateSelector({
           <PopoverTrigger asChild>
             <Button
               variant="ghost"
-              className="w-[250px] text-lg  text-center border border-slate-400 rounded h-10"
+              className="w-[250px] text-lg text-center border border-slate-400 rounded h-10"
             >
               {format(selectedDate, "EEEE, MMM d")}
               <CalendarIcon className="w-4 h-4 ml-1" />
@@ -63,7 +63,7 @@ export default function DateSelector({
           onClick={() =>
             onChange(new Date(selectedDate.setDate(selectedDate.getDate() + 1)))
           }
-          className="border border-slate-400 rounded h-10"
+          className="border border-slate-400 rounded h-10 w-10"
         >
           <ChevronRightIcon className="w-5 h-5 rounded" />
         </Button>
