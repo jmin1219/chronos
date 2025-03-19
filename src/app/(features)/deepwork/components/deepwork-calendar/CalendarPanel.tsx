@@ -7,6 +7,7 @@ import DailySchedule from "./DailySchedule";
 import { useSessionsQuery } from "@/hooks/useSessionsQuery";
 import { startOfWeek } from "date-fns";
 import { DeepWorkSessionType } from "@/lib/types/deepwork_sessions";
+import { Separator } from "@/components/ui/separator";
 
 export default function CalendarPanel() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -25,13 +26,13 @@ export default function CalendarPanel() {
     : [];
 
   return (
-    <div className="h-full flex flex-col bg-gray-900 rounded-lg p-4">
+    <div className="h-full flex flex-col bg-gray-900 rounded-lg p-2">
       <DateSelector selectedDate={selectedDate} onChange={setSelectedDate} />
       <WeeklySelector
         selectedDate={selectedDate}
-        startOfWeek={startOfCurrentWeek}
         onSelectDate={setSelectedDate}
       />
+      <Separator className="my-2 bg-slate-400" />
 
       <div className="flex-1 overflow-hidden mt-4">
         <DailySchedule

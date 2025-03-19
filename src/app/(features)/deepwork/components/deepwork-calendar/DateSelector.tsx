@@ -22,7 +22,7 @@ export default function DateSelector({
   return (
     <div className="relative flex items-center justify-between p-2 w-full">
       {/* Date Picker & Arrow Buttons */}
-      <div className="absolute left-1/2 transform -translate-x-1/2">
+      <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-2">
         {/* Left Arrow */}
         <Button
           variant="ghost"
@@ -30,6 +30,7 @@ export default function DateSelector({
           onClick={() =>
             onChange(new Date(selectedDate.setDate(selectedDate.getDate() - 1)))
           }
+          className="border border-slate-400 rounded h-10"
         >
           <ChevronLeftIcon className="w-5 h-5" />
         </Button>
@@ -39,7 +40,7 @@ export default function DateSelector({
           <PopoverTrigger asChild>
             <Button
               variant="ghost"
-              className="w-[210px] text-lg font-semibold text-center"
+              className="w-[250px] text-lg  text-center border border-slate-400 rounded h-10"
             >
               {format(selectedDate, "EEEE, MMM d")}
               <CalendarIcon className="w-4 h-4 ml-1" />
@@ -62,8 +63,9 @@ export default function DateSelector({
           onClick={() =>
             onChange(new Date(selectedDate.setDate(selectedDate.getDate() + 1)))
           }
+          className="border border-slate-400 rounded h-10"
         >
-          <ChevronRightIcon className="w-5 h-5" />
+          <ChevronRightIcon className="w-5 h-5 rounded" />
         </Button>
       </div>
 
