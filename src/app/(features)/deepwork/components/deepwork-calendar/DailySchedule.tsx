@@ -3,6 +3,11 @@
 import { format, getHours, getMinutes } from "date-fns";
 import { SessionData } from "./CalendarPanel";
 import { formatDuration } from "@/lib/utils";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 interface DailyScheduleProps {
   sessions: SessionData[];
@@ -58,16 +63,39 @@ export default function DailySchedule({ sessions }: DailyScheduleProps) {
       {/* RENDER DEEP WORK SESSIONS */}
       {sessions.length > 0 &&
         sessions.map((session) => (
-          <div
-            key={session.id}
-            className="absolute rounded-md text-xs p-1 text-white shadow-md flex justify-between"
-            style={getSessionStyle(session)}
-          >
-            <p className="font-bold">{session.taskTitle}</p>
-            <p className="font-semibold">
-              {formatDuration(session.sessionDuration)}
-            </p>
-          </div>
+          <HoverCard key={session.id}>
+            <HoverCardTrigger asChild>
+              <div
+                className="absolute rounded-md text-sm p-1 text-white shadow-md flex justify-between overflow-hidden text-ellipsis"
+                style={getSessionStyle(session)}
+              >
+                <p className="font-bold">{session.taskTitle}</p>
+                <p className="font-semibold">
+                  {formatDuration(session.sessionDuration)}
+                </p>
+              </div>
+            </HoverCardTrigger>
+            <HoverCardContent className="bg-gray-900 border border-gray-700 shadow-lg rounded-lg p-3 w-auto min-w-80 text-white">
+              <div className="flex justify-between items-start mb-1">
+                <div className="flex flex-col">
+                  <p
+                    className="text-sm font-bold"
+                    style={{ color: session.projectColor }}
+                  >
+                    {session.projectName}
+                  </p>
+                  <p>{session.taskTitle}</p>
+                </div>
+                <p className="text-sm font-semibold">
+                  {format(session.startTime, "HH:mm")} -{" "}
+                  {format(session.endTime, "HH:mm")}
+                </p>
+              </div>
+              <p className="text-slate-300 text-xs">
+                {session.notes || "No notes added."}
+              </p>
+            </HoverCardContent>
+          </HoverCard>
         ))}
     </div>
   );

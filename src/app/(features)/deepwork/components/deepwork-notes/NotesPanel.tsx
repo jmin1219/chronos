@@ -106,17 +106,18 @@ export default function NotesPanel() {
                 key={session.id}
                 className="p-2 bg-gray-800 rounded-lg shadow-md border border-gray-700"
               >
-                <div className="flex justify-between mb-1">
+                <div className="flex justify-between items-start mb-1">
                   {/* Left: Task Title & Project Badge */}
                   <div className="flex flex-col gap-1">
                     {project && (
                       <Badge
                         style={{ backgroundColor: project?.color ?? "#CCCCCC" }}
+                        className="self-start"
                       >
                         {project.name ?? "Unknown Project"}
                       </Badge>
                     )}
-                    <p className="text-sm font-bold">
+                    <p className="text-sm font-bold ml-1">
                       {task?.title ?? "Unkown Task"}
                     </p>
                   </div>
