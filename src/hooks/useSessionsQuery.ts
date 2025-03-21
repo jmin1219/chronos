@@ -19,7 +19,7 @@ export const useEnrichedSessionsQuery = () => {
     queryKey: ["enrichedSessions"],
     queryFn: async () => {
       const res = await fetch("/api/enriched_sessions");
-      if (!res.ok) throw new Error("Failed to fetch sessions");
+      if (!res.ok) throw new Error("fetchEnrichedSessions error");
       return res.json();
     },
   });

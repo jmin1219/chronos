@@ -1,6 +1,7 @@
 "use client";
 
 import AddTaskDialog from "@/app/(features)/tasks/components/AddTaskDialog";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -9,19 +10,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useTasksQuery } from "@/hooks/useTasksQuery";
+import { useEnrichedTasksQuery } from "@/hooks/useTasksQuery";
 import { useTimerStore } from "@/lib/stores/useTimerStore";
-import { TaskType } from "@/lib/types/tasks";
+import { EnrichedTaskType } from "@/lib/types/tasks";
+import { TASK_PRIORITIES, TaskPriorityKey } from "@/lib/utils";
 
 export default function TaskSelector() {
   const { isRunning, setTask } = useTimerStore();
-  const { data: tasks = [] } = useTasksQuery();
+  const { data: tasks = [] } = useEnrichedTasksQuery();
 
   return (
     <Select
       onValueChange={(value) => {
         const selectedTask = tasks.find(
-          (task: TaskType) => task.id === Number(value)
+          (task: EnrichedTaskType) => task.id === Number(value)
         );
         if (selectedTask) setTask(selectedTask.id, selectedTask.projectId);
       }}
@@ -32,13 +34,21 @@ export default function TaskSelector() {
       </SelectTrigger>
       <SelectContent>
         {tasks.length > 0 ? (
-          tasks.map((task: TaskType) => (
-            // TODO: Add project badge at end.
-            // TODO: Add other task properties like due date, priority, and/or estimated duration
+          tasks.map((task: EnrichedTaskType) => (
             <SelectItem key={task.id} value={String(task.id)}>
-              <div className="flex justify-between">
-                <span>{task.title}</span>
-                <span>{task.projectId}</span>
+              <div className="flex justify-between w-full items-center gap-3">
+                <span className="font-medium truncate max-w-[80%]">
+                  {task.title}
+                </span>
+                <span className="text-xs capitalize text-muted-foreground">
+                  {TASK_PRIORITIES[task.priority as TaskPriorityKey].title}
+                </span>
+                <Badge
+                  style={{ backgroundColor: task.projectColor }}
+                  className="text-xs"
+                >
+                  {task.projectName}
+                </Badge>
               </div>
             </SelectItem>
           ))

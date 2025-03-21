@@ -24,7 +24,7 @@ export async function GET() {
 
     return NextResponse.json(enrichedSessions);
   } catch (error) {
-    console.error("API Error: ", error);
+    console.error("[ENRICHED_SESSIONS_GET] Error: ", error);
     return NextResponse.json(
       { error: "Failed to fetch enriched sessions." },
       { status: 500 }

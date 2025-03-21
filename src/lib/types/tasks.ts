@@ -27,3 +27,15 @@ export type TaskAPIRequestType = {
   description?: string;
   priority: string;
 };
+
+export type EnrichedTaskType = {
+  id: number;
+  title: string;
+  projectId: number;
+  estimatedDuration: number;
+  completed: boolean;
+  dueDate?: number | null;
+  priority: string;
+  projectName: string;
+  projectColor: string;
+};

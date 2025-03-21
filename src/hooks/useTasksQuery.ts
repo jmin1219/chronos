@@ -15,6 +15,17 @@ export const useTasksQuery = () => {
   });
 };
 
+export const useEnrichedTasksQuery = () => {
+  return useQuery({
+    queryKey: ["enrichedTasks"],
+    queryFn: async () => {
+      const res = await fetch("/api/enriched_tasks");
+      if (!res.ok) throw new Error("fetchEnrichedTasks error");
+      return res.json();
+    },
+  });
+};
+
 // Add a new task
 export const useAddTask = () => {
   const queryClient = useQueryClient();
