@@ -14,6 +14,17 @@ export const useSessionsQuery = () => {
   });
 };
 
+export const useEnrichedSessionsQuery = () => {
+  return useQuery({
+    queryKey: ["enrichedSessions"],
+    queryFn: async () => {
+      const res = await fetch("/api/enriched_sessions");
+      if (!res.ok) throw new Error("Failed to fetch sessions");
+      return res.json();
+    },
+  });
+};
+
 export const useSaveDeepworkSession = () => {
   const queryClient = useQueryClient();
   const mutation = useMutation({

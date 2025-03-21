@@ -4,6 +4,7 @@ import { DeepWorkSessionType } from "../types/deepwork_sessions";
 type TimerState = {
   // Session State
   taskId: number | null;
+  projectId: number | null;
   mode: "work" | "break" | "idle";
   // Timer State
   isRunning: boolean;
@@ -16,7 +17,7 @@ type TimerState = {
 };
 
 type TimerActions = {
-  setTask: (taskId: number) => void;
+  setTask: (taskId: number, projectId: number) => void;
   adjustTime: (minutes: number) => void;
   startWork: () => void;
   endSession: (
@@ -30,6 +31,7 @@ type TimerActions = {
 export const useTimerStore = create<TimerState & TimerActions>((set, get) => {
   return {
     taskId: null,
+    projectId: null,
     mode: "idle",
     isRunning: false,
     workDuration: 25 * 60,
@@ -40,7 +42,7 @@ export const useTimerStore = create<TimerState & TimerActions>((set, get) => {
     notes: "",
 
     // Select Task
-    setTask: (taskId) => set({ taskId }),
+    setTask: (taskId, projectId) => set({ taskId, projectId }),
 
     // Adjust timeLeft during or before starting a work session
     adjustTime: (minutes) => {

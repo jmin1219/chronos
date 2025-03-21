@@ -1,16 +1,16 @@
 "use client";
 
 import { format, getHours, getMinutes } from "date-fns";
-import { SessionData } from "./CalendarPanel";
 import { formatDuration } from "@/lib/utils";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { EnrichedSessionType } from "@/lib/types/deepwork_sessions";
 
 interface DailyScheduleProps {
-  sessions: SessionData[];
+  sessions: EnrichedSessionType[];
 }
 
 export default function DailySchedule({ sessions }: DailyScheduleProps) {
@@ -23,7 +23,7 @@ export default function DailySchedule({ sessions }: DailyScheduleProps) {
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
-  const getSessionStyle = (session: SessionData) => {
+  const getSessionStyle = (session: EnrichedSessionType) => {
     // TODO: Fix height calculations and UI
     const startHour = getHours(session.startTime);
     const startMinute = getMinutes(session.startTime);
@@ -46,11 +46,12 @@ export default function DailySchedule({ sessions }: DailyScheduleProps) {
   return (
     <div className="relative h-full w-full bg-gray-800 rounded-md p-4 overflow-y-auto overflow-x-hidden">
       {/* TIMELINE GRID */}
-      <div className="relative w-full h-full ">
+      <div className="relative w-full">
         {hours.map((hour) => (
           <div
             key={hour}
-            className={`relative h-[${HOUR_HEIGHT}px] flex items-start`}
+            className={`relative flex items-start`}
+            style={{ height: HOUR_HEIGHT }}
           >
             <span className="absolute text-xs text-gray-400">
               {format(new Date().setHours(hour, 0, 0, 0), "HH:mm")}

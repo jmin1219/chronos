@@ -3,40 +3,28 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useProjectsQuery } from "@/hooks/useProjectsQuery";
-import { useSessionsQuery } from "@/hooks/useSessionsQuery";
-import { useTasksQuery } from "@/hooks/useTasksQuery";
+import { useEnrichedSessionsQuery } from "@/hooks/useSessionsQuery";
 import { useTimerStore } from "@/lib/stores/useTimerStore";
-import { DeepWorkSessionType } from "@/lib/types/deepwork_sessions";
-import { ProjectType } from "@/lib/types/projects";
-import { TaskType } from "@/lib/types/tasks";
+import { EnrichedSessionType } from "@/lib/types/deepwork_sessions";
 import { formatDuration, formatRelativeDate } from "@/lib/utils";
 import { useState } from "react";
 
 export default function NotesPanel() {
-  const { notes, setNotes, mode, taskId } = useTimerStore();
-  const { data: recentSessions = [], isLoading, error } = useSessionsQuery();
-  const { data: tasks = [] } = useTasksQuery();
-  const { data: projects = [] } = useProjectsQuery();
-
-  const currentTask = tasks?.find((t: TaskType) => t.id === taskId) ?? null;
-  const currentProject =
-    projects?.find((p: ProjectType) => p.id === currentTask?.projectId) ?? null;
+  const { notes, setNotes, mode, taskId, projectId } = useTimerStore();
+  const { data: sessions = [], isLoading, error } = useEnrichedSessionsQuery();
 
   const [filter, setFilter] = useState<"task" | "project" | null>(null);
 
-  const filteredSessions = recentSessions
+  const filteredSessions = sessions
     .sort(
-      (a: DeepWorkSessionType, b: DeepWorkSessionType) =>
+      (a: EnrichedSessionType, b: EnrichedSessionType) =>
         b.startTime - a.startTime
     )
-    .filter((session: DeepWorkSessionType) => {
+    .filter((session: EnrichedSessionType) => {
       if (filter === "task") return session.taskId === taskId;
       if (filter === "project") {
-        const sessionTask = tasks?.find(
-          (t: TaskType) => t.id === session.taskId
-        );
-        return sessionTask?.projectId === currentProject?.id;
+        // TODO: get projectId from taskId (maybe stored with useTimerStore)
+        return session.projectId === projectId;
       }
       return true; // Shows all session notes when neither filter is clicked.
     });
@@ -95,12 +83,7 @@ export default function NotesPanel() {
             Error loading sessions.
           </p>
         ) : filteredSessions.length > 0 ? (
-          filteredSessions.map((session: DeepWorkSessionType) => {
-            const task =
-              tasks?.find((t: TaskType) => t.id === session.taskId) ?? null;
-            const project =
-              projects?.find((p: ProjectType) => p.id === task?.projectId) ??
-              null;
+          filteredSessions.map((session: EnrichedSessionType) => {
             return (
               <div
                 key={session.id}
@@ -109,16 +92,18 @@ export default function NotesPanel() {
                 <div className="flex justify-between items-start mb-1">
                   {/* Left: Task Title & Project Badge */}
                   <div className="flex flex-col gap-1">
-                    {project && (
+                    {session.projectId && (
                       <Badge
-                        style={{ backgroundColor: project?.color ?? "#CCCCCC" }}
+                        style={{
+                          backgroundColor: session.projectColor ?? "#CCCCCC",
+                        }}
                         className="self-start"
                       >
-                        {project.name ?? "Unknown Project"}
+                        {session.projectName ?? "Unknown Project"}
                       </Badge>
                     )}
-                    <p className="text-sm font-bold ml-1">
-                      {task?.title ?? "Unkown Task"}
+                    <p className="text-sm font-bold">
+                      {session.taskTitle ?? "Unkown Task"}
                     </p>
                   </div>
                   {/* Right: Session Date & Duration */}

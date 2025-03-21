@@ -19,7 +19,12 @@ export default function TaskSelector() {
 
   return (
     <Select
-      onValueChange={(value) => setTask(Number(value))}
+      onValueChange={(value) => {
+        const selectedTask = tasks.find(
+          (task: TaskType) => task.id === Number(value)
+        );
+        if (selectedTask) setTask(selectedTask.id, selectedTask.projectId);
+      }}
       disabled={isRunning}
     >
       <SelectTrigger className="w-full">
