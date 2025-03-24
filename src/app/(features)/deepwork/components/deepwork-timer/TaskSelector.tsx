@@ -15,7 +15,12 @@ import { useTimerStore } from "@/lib/stores/useTimerStore";
 import { EnrichedTaskType } from "@/lib/types/tasks";
 import { TASK_PRIORITIES, TaskPriorityKey } from "@/lib/utils";
 
-export default function TaskSelector() {
+type TaskSelectorProps = {
+  value?: number;
+  onChange?: (value: number) => void;
+};
+
+export default function TaskSelector({ value, onChange }: TaskSelectorProps) {
   const { isRunning, setTask } = useTimerStore();
   const { data: tasks = [] } = useEnrichedTasksQuery();
 
@@ -25,9 +30,13 @@ export default function TaskSelector() {
         const selectedTask = tasks.find(
           (task: EnrichedTaskType) => task.id === Number(value)
         );
-        if (selectedTask) setTask(selectedTask.id, selectedTask.projectId);
+        if (selectedTask) {
+          onChange?.(selectedTask.id);
+          setTask(selectedTask.id, selectedTask.projectId);
+        }
       }}
-      disabled={isRunning}
+      value={value?.toString()}
+      disabled={isRunning && !onChange}
     >
       <SelectTrigger className="w-full">
         <SelectValue placeholder="Select a task" />

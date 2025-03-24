@@ -8,12 +8,23 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { EnrichedSessionType } from "@/lib/types/deepwork_sessions";
+import { useState } from "react";
+import EditSessionDialog from "./EditSessionDialog";
 
 interface DailyScheduleProps {
   sessions: EnrichedSessionType[];
 }
 
 export default function DailySchedule({ sessions }: DailyScheduleProps) {
+  const [openEditSessionDialog, setOpenEditSessionDialog] = useState(false);
+  const [selectedSession, setSelectedSession] =
+    useState<EnrichedSessionType | null>(null);
+
+  const handleOpenEditSessionDialog = (session: EnrichedSessionType) => {
+    setSelectedSession(session);
+    setOpenEditSessionDialog(true);
+  };
+
   if (!Array.isArray(sessions)) {
     console.error("DailySchedule received invalid session data:", sessions);
     return <div className="text-red-500">Error: Invalid session data</div>;
@@ -24,7 +35,6 @@ export default function DailySchedule({ sessions }: DailyScheduleProps) {
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
   const getSessionStyle = (session: EnrichedSessionType) => {
-    // TODO: Fix height calculations and UI
     const startHour = getHours(session.startTime);
     const startMinute = getMinutes(session.startTime);
 
@@ -69,6 +79,7 @@ export default function DailySchedule({ sessions }: DailyScheduleProps) {
               <div
                 className="absolute rounded-md text-sm p-1 text-white shadow-md flex justify-between overflow-hidden text-ellipsis"
                 style={getSessionStyle(session)}
+                onClick={() => handleOpenEditSessionDialog(session)}
               >
                 <p className="font-bold">{session.taskTitle}</p>
                 <p className="font-semibold">
@@ -98,6 +109,11 @@ export default function DailySchedule({ sessions }: DailyScheduleProps) {
             </HoverCardContent>
           </HoverCard>
         ))}
+      <EditSessionDialog
+        open={openEditSessionDialog}
+        onOpenChange={setOpenEditSessionDialog}
+        session={selectedSession}
+      />
     </div>
   );
 }

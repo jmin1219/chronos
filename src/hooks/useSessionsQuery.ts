@@ -1,3 +1,5 @@
+"use client";
+
 import { DeepWorkSessionType } from "@/lib/types/deepwork_sessions";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -41,4 +43,46 @@ export const useSaveDeepworkSession = () => {
     },
   });
   return mutation;
+};
+
+export const useUpdateSession = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      id,
+      updates,
+    }: {
+      id: number;
+      updates: Partial<DeepWorkSessionType>;
+    }) => {
+      const res = await fetch(`/api/deepwork_sessions/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
+
+      if (!res.ok) throw new Error("Failed to update session.");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["enrichedSessions"] });
+    },
+  });
+};
+
+export const useDeleteSession = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`/api/deepwork_sessions/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Failed to delete session.");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["enrichedSessions"] });
+    },
+  });
 };
