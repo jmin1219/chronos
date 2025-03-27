@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "61e64218-83c8-41e3-8d75-953f21c11e8f",
+  "id": "c96a6c41-c342-4cee-9120-68e2b0461305",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "deepwork_sessions": {
@@ -42,21 +42,6 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
-        },
-        "work_duration": {
-          "name": "work_duration",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
-        },
-        "pause_duration": {
-          "name": "pause_duration",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": 0
         },
         "notes": {
           "name": "notes",
@@ -209,22 +194,6 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
-        },
-        "actual_start": {
-          "name": "actual_start",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": 0
-        },
-        "actual_end": {
-          "name": "actual_end",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": 0
         }
       },
       "indexes": {},

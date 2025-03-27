@@ -23,8 +23,6 @@ export const taskSchedules = sqliteTable("task_schedules", {
   taskId: integer("task_id").references(() => tasks.id), // Links (multiple) schedules to a single task
   scheduledStart: integer("scheduled_start"), // Stores UNIX timestamp
   scheduledEnd: integer("scheduled_end"), // Stores UNIX timestamp
-  actualStart: integer("actual_start").default(0), // Only used if task is completed without a logged deep work session
-  actualEnd: integer("actual_end").default(0),
 });
 
 // PROJECTS TABLE

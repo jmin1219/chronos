@@ -19,7 +19,6 @@ export default function CalendarPanel() {
       end: new Date(session.endTime),
       backgroundColor: session.projectColor ?? "#999",
       display: "block",
-      opacity: 0.5,
     }));
   }, [sessions]);
 
@@ -34,9 +33,15 @@ export default function CalendarPanel() {
           right: "dayGridMonth,timeGridWeek",
         }}
         nowIndicator={true}
+        droppable={true}
+        eventReceive={(info) => {
+          info.revert();
+        }}
+        slotLabelInterval="01:00"
         slotDuration="00:15:00"
         height="100%"
         events={events}
+        eventDurationEditable={true}
         editable={false}
         selectable={false}
       />

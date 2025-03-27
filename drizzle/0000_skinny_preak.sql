@@ -4,8 +4,6 @@ CREATE TABLE `deepwork_sessions` (
 	`start_time` integer NOT NULL,
 	`end_time` integer DEFAULT NULL,
 	`session_duration` integer,
-	`work_duration` integer,
-	`pause_duration` integer DEFAULT 0,
 	`notes` text,
 	FOREIGN KEY (`task_id`) REFERENCES `tasks`(`id`) ON UPDATE no action ON DELETE no action
 );
@@ -31,8 +29,6 @@ CREATE TABLE `task_schedules` (
 	`task_id` integer,
 	`scheduled_start` integer,
 	`scheduled_end` integer,
-	`actual_start` integer DEFAULT 0,
-	`actual_end` integer DEFAULT 0,
 	FOREIGN KEY (`task_id`) REFERENCES `tasks`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
