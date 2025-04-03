@@ -10,8 +10,8 @@ export default function SchedulePage() {
         <CalendarPanel />
       </div>
       <div className="flex flex-col w-[40%]">
-        <div className="h-1/3 border-b p-4">Insights Panel</div>
-        <div className="h-2/3 p-4">
+        <div className="h-1/2 border-b p-4">Insights Panel</div>
+        <div className="h-1/2 p-4">
           <TasksPanel />
         </div>
       </div>
